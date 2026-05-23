@@ -10,12 +10,9 @@ export const personalInfoSchema = z.object({
     .string()
     .min(1, "NPM wajib diisi")
     .regex(/^\d{8,20}$/, "Format NPM salah, harus angka 8-20 digit"),
-  prodi: z
-    .string()
-    .min(1, "Program studi wajib dipilih")
-    .refine((val) => ["INFORMATIKA", "SISTEM_INFORMASI", "SAINS_DATA", "BISNIS_DIGITAL"].includes(val), {
-      message: "Pilih salah satu program studi",
-    }),
+  prodi: z.enum(["INFORMATIKA", "SISTEM_INFORMASI", "SAINS_DATA", "BISNIS_DIGITAL"], {
+    errorMap: () => ({ message: "Program studi wajib dipilih" }),
+  }),
   email: z
     .string()
     .min(1, "Email wajib diisi")
