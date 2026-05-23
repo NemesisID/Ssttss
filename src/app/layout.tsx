@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
+import WhatsAppBubble from "@/components/WhatsAppBubble";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +17,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Pendaftaran ISCOM - UPN Veteran Jawa Timur",
   description: "Form pendaftaran peserta ISCOM UPN Veteran Jawa Timur",
+  icons: {
+    icon: "/logofav.png",
+    shortcut: "/logofav.png",
+    apple: "/logofav.png",
+  },
 };
 
 export default function RootLayout({
@@ -28,8 +34,11 @@ export default function RootLayout({
       lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-900">
-        <Providers>{children}</Providers>
+      <body className="min-h-full flex flex-col bg-[#0a0e1a]">
+        <Providers>
+          {children}
+          <WhatsAppBubble />
+        </Providers>
       </body>
     </html>
   );

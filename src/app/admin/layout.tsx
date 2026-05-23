@@ -22,8 +22,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <p className="text-slate-400">Loading...</p>
+      <div className="min-h-screen bg-[#0a0e1a] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 text-sm">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -31,9 +34,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (status === "unauthenticated") return null;
 
   return (
-    <div className="min-h-screen bg-slate-900 flex">
+    <div className="min-h-screen bg-[#0a0e1a] flex">
       <Sidebar />
-      <main className="flex-1 p-6 overflow-auto">{children}</main>
+      <main className="flex-1 p-8 overflow-auto">
+        {children}
+      </main>
     </div>
   );
 }

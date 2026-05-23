@@ -15,43 +15,55 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-slate-800/50 border-r border-white/5 p-4 flex flex-col">
-      <div className="mb-8">
-        <h2 className="text-lg font-bold text-white">ISCOM Admin</h2>
-        <p className="text-xs text-slate-400">Panel Pendaftaran</p>
+    <aside className="w-64 bg-white/[0.02] border-r border-white/[0.06] p-5 flex flex-col">
+      {/* Brand */}
+      <div className="mb-8 px-2">
+        <div className="flex items-center gap-3">
+          <img src="/logo.png" alt="ISCOM" className="w-9 h-9 rounded-xl" />
+          <div>
+            <h2 className="text-sm font-bold text-white">ISCOM</h2>
+            <p className="text-[10px] text-slate-500 font-medium tracking-wide">ADMIN PANEL</p>
+          </div>
+        </div>
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 space-y-1">
+        <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider px-3 mb-2">Menu</p>
         {NAV_ITEMS.map((item) => {
           const active = pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${
                 active
-                  ? "bg-blue-600/20 text-blue-400"
-                  : "text-slate-400 hover:text-white hover:bg-white/5"
+                  ? "bg-gradient-to-r from-blue-500/10 to-cyan-500/10 text-blue-400 border border-blue-500/10"
+                  : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
               }`}
             >
-              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-[18px] h-[18px] shrink-0 ${active ? "text-blue-400" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
               </svg>
-              {item.label}
+              <span className="font-medium">{item.label}</span>
+              {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400" />}
             </Link>
           );
         })}
       </nav>
 
-      <button
-        onClick={() => signOut({ callbackUrl: "/admin/login" })}
-        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-400 hover:bg-red-500/10 transition"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-        Logout
-      </button>
+      {/* Logout */}
+      <div className="border-t border-white/[0.06] pt-4 mt-4">
+        <button
+          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/[0.05] transition-all duration-200 w-full"
+        >
+          <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span className="font-medium">Logout</span>
+        </button>
+      </div>
     </aside>
   );
 }

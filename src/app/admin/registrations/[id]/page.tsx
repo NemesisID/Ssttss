@@ -25,8 +25,6 @@ export default function RegistrationDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [data, setData] = useState<Registration | null>(null);
-  const [reason, setReason] = useState("");
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetch(`/api/admin/registrations/${params.id}`)
@@ -34,112 +32,93 @@ export default function RegistrationDetailPage() {
       .then(setData);
   }, [params.id]);
 
-  const handleVerify = async (action: "approve" | "reject") => {
-    if (action === "reject" && !reason) {
-      alert("Alasan reject wajib diisi");
-      return;
-    }
-    setLoading(true);
-    await fetch(`/api/payment/verify/${params.id}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action, reason }),
-    });
-    router.refresh();
-    const res = await fetch(`/api/admin/registrations/${params.id}`);
-    setData(await res.json());
-    setLoading(false);
-  };
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
-  if (!data) return <p className="text-slate-400">Loading...</p>;
+  const statusBadge = (status: string) => {
+    const map: Record<string, string> = {
+      PENDING: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+      UPLOADED: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+      PAID: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+      REJECTED: "bg-red-500/10 text-red-400 border-red-500/20",
+    };
+    return map[status] || "bg-slate-500/10 text-slate-400 border-slate-500/20";
+  };
 
   return (
     <div className="max-w-3xl">
-      <button onClick={() => router.back()} className="text-slate-400 hover:text-white text-sm mb-4">
-        &larr; Kembali
+      {/* Back button */}
+      <button
+        onClick={() => router.back()}
+        className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-6 transition-colors"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        Kembali
       </button>
 
-      <h1 className="text-2xl font-bold text-white mb-6">{data.nama}</h1>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white">{data.nama}</h1>
+          <p className="text-slate-500 text-sm mt-1">Terdaftar {new Date(data.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>
+        </div>
+        <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold border ${statusBadge(data.paymentStatus)}`}>
+          {data.paymentStatus}
+        </span>
+      </div>
 
-      <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4 mb-6">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p className="text-slate-400 text-sm">NPM</p>
-            <p className="text-white">{data.npm}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-sm">Prodi</p>
-            <p className="text-white">{data.prodi}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-sm">Email</p>
-            <p className="text-white">{data.email}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-sm">WhatsApp</p>
-            <p className="text-white">{data.noWhatsapp}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-sm">Divisi</p>
-            <p className="text-white">{data.divisions.map((d) => d.division).join(", ")}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-sm">Plan</p>
-            <p className="text-white">{data.plan}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-sm">Status Pembayaran</p>
-            <p className="text-white font-medium">{data.paymentStatus}</p>
-          </div>
-          <div>
-            <p className="text-slate-400 text-sm">Provider</p>
-            <p className="text-white">{data.paymentProvider || "-"}</p>
-          </div>
+      {/* Info Card */}
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 mb-5">
+        <div className="grid grid-cols-2 gap-5">
+          {[
+            { label: "NPM", value: data.npm },
+            { label: "Prodi", value: data.prodi.replace("_", " ") },
+            { label: "Email", value: data.email },
+            { label: "WhatsApp", value: data.noWhatsapp },
+            { label: "Divisi", value: data.divisions.map((d) => d.division.replace("_", " ")).join(", ") },
+            { label: "Plan", value: data.plan },
+            { label: "Provider", value: data.paymentProvider || "-" },
+            { label: "Upload", value: data.paymentUploadedAt ? new Date(data.paymentUploadedAt).toLocaleString("id-ID") : "-" },
+          ].map((item) => (
+            <div key={item.label}>
+              <p className="text-slate-500 text-xs font-medium mb-1">{item.label}</p>
+              <p className="text-white text-sm">{item.value}</p>
+            </div>
+          ))}
         </div>
       </div>
 
+      {/* Payment Proof */}
       {data.paymentProofUrl && (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-3">Bukti Pembayaran</h2>
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h2 className="text-base font-semibold text-white">Bukti Pembayaran</h2>
+          </div>
           <img
             src={data.paymentProofUrl}
             alt="Bukti bayar"
-            className="max-w-sm rounded-lg border border-white/10"
+            className="max-w-sm rounded-xl border border-white/[0.08] shadow-lg"
           />
-          <p className="text-slate-400 text-xs mt-2">
-            Diupload: {data.paymentUploadedAt ? new Date(data.paymentUploadedAt).toLocaleString("id-ID") : "-"}
-          </p>
         </div>
       )}
 
-      {data.paymentStatus === "UPLOADED" && (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Verifikasi Pembayaran</h2>
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder="Alasan reject (wajib jika reject)"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => handleVerify("approve")}
-                disabled={loading}
-                className="flex-1 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white font-medium rounded-lg transition"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => handleVerify("reject")}
-                disabled={loading}
-                className="flex-1 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white font-medium rounded-lg transition"
-              >
-                Reject
-              </button>
-            </div>
-          </div>
+      {/* Rejection reason */}
+      {data.rejectionReason && (
+        <div className="mt-5 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+          <p className="text-red-400 text-sm font-medium">Alasan Reject:</p>
+          <p className="text-red-300 text-sm mt-1">{data.rejectionReason}</p>
         </div>
       )}
     </div>

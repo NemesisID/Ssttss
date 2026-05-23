@@ -43,11 +43,12 @@ export async function POST(req: NextRequest) {
     where: { id: registrationId },
     data: {
       paymentProofUrl: result.filePath,
-      paymentStatus: "UPLOADED",
+      paymentStatus: "PAID",
       paymentUploadedAt: new Date(),
+      paymentVerifiedAt: new Date(),
       rejectionReason: null,
     },
   });
 
-  return NextResponse.json({ success: true, status: "UPLOADED" });
+  return NextResponse.json({ success: true, status: "PAID" });
 }
