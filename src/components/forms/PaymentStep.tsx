@@ -8,9 +8,9 @@ type Props = {
 };
 
 export default function PaymentStep({ registrationId, onSuccess }: Props) {
-  const [qrImage, setQrImage] = useState<string | null>(null);
+  const [qrImage, setQrImage] = useState<string | null>(null);         // Generated QR (fallback)
+  const [qrisImageUrl, setQrisImageUrl] = useState<string | null>(null); // Gambar upload admin (prioritas)
   const [amount, setAmount] = useState(0);
-  const [provider, setProvider] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,9 +22,9 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
     });
     const json = await res.json();
     if (res.ok) {
-      setQrImage(json.qrImage);
+      setQrisImageUrl(json.qrisImageUrl); // Gambar upload admin
+      setQrImage(json.qrImage);           // Fallback generated QR
       setAmount(json.amount);
-      setProvider(json.provider);
     } else {
       setError(json.error);
     }
@@ -56,6 +56,10 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
     setUploading(false);
   };
 
+  // Tampilkan gambar: prioritaskan gambar upload admin, fallback ke generated QR
+  const displayImage = qrisImageUrl || qrImage;
+  const hasQris = !!displayImage;
+
   return (
     <div className="space-y-5">
       <div>
@@ -72,14 +76,25 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
         </div>
       )}
 
-      {qrImage && (
+      {!hasQris && !error && (
+        <div className="flex items-center justify-center py-10">
+          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
+
+      {hasQris && (
         <div className="text-center space-y-3">
           <div className="bg-white p-3 rounded-2xl inline-block shadow-xl shadow-black/20">
-            <img src={qrImage} alt="QRIS" className="w-56 h-56 rounded-lg" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={displayImage!}
+              alt="QRIS Pembayaran"
+              className="w-56 h-56 rounded-lg object-contain"
+            />
           </div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08]">
             <div className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span className="text-slate-300 text-xs">{provider}</span>
+            <span className="text-slate-300 text-xs">QRIS</span>
           </div>
           <p className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 font-bold text-3xl">
             Rp {amount.toLocaleString("id-ID")}

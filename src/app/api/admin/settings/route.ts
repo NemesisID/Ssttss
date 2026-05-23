@@ -22,10 +22,9 @@ export async function PUT(req: NextRequest) {
   const body = await req.json();
   const allowedKeys = [
     "paid_plan_price",
-    "active_qris_provider",
-    "gopay_qris_string",
-    "shopeepay_qris_string",
     "registration_open",
+    "qris_string",
+    "qris_image_path",
   ];
 
   for (const [key, value] of Object.entries(body)) {

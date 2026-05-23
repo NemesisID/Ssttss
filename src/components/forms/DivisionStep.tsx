@@ -10,10 +10,10 @@ type Props = {
 };
 
 const DIVISIONS = [
-  { value: "PROGRAMMING", label: "Programming", icon: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
-  { value: "DATA", label: "Data", icon: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
-  { value: "BUSINESS_PLAN", label: "Business Plan", icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
-  { value: "UI_UX", label: "UI/UX", icon: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
+  { value: "PROGRAMMING", label: "Programming", desc: "Belajar membuat program, database, dan aplikasi web dari awal.", icon: "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" },
+  { value: "DATA", label: "Data", desc: "Belajar mengolah, menganalisis, dan membaca data untuk mengambil kesimpulan", icon: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" },
+  { value: "BUSINESS_PLAN", label: "Business Plan", desc: "Mempelajari validasi masalah, Business Model Canvas, riset pasar, hingga penyusunan pitch-deck.", icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
+  { value: "UI_UX", label: "UI/UX", desc: "Belajar merancang tampilan aplikasi atau website yang menarik serta mudah digunakan.", icon: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
 ];
 
 export default function DivisionStep({ data, onChange, onNext, onBack }: Props) {
@@ -58,6 +58,7 @@ export default function DivisionStep({ data, onChange, onNext, onBack }: Props) 
                 </div>
                 <div className="flex-1">
                   <p className="text-white font-medium text-sm">{div.label}</p>
+                  <p className="text-slate-500 text-xs">{div.desc}</p>
                 </div>
                 <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
                   selected ? "border-blue-500 bg-blue-500" : "border-white/20"

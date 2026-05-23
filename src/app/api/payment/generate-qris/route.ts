@@ -27,17 +27,41 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Pembayaran sudah dikonfirmasi" }, { status: 400 });
   }
 
-  const provider = await getSetting(SETTING_KEYS.ACTIVE_QRIS_PROVIDER);
   const priceStr = await getSetting(SETTING_KEYS.PAID_PLAN_PRICE);
   const price = parseInt(priceStr || "15000", 10);
 
-  const qrisKey = provider === "SHOPEEPAY"
-    ? SETTING_KEYS.SHOPEEPAY_QRIS_STRING
-    : SETTING_KEYS.GOPAY_QRIS_STRING;
+  // Cek apakah admin sudah upload gambar QRIS
+  const qrisImagePath = await getSetting(SETTING_KEYS.QRIS_IMAGE_PATH);
 
-  const staticQris = await getSetting(qrisKey);
+  if (qrisImagePath) {
+    // Admin sudah upload gambar QRIS — langsung kembalikan URL gambar
+    // Update payment provider ke GOPAY sebagai default (untuk backward compat)
+    await prisma.registration.update({
+      where: { id: registrationId },
+      data: { paymentProvider: "GOPAY" },
+    });
+
+    // Ubah path file menjadi URL API yang bisa diakses
+    const imageUrl = qrisImagePath.replace(
+      /^\/uploads\/qris\//,
+      "/api/uploads/qris/"
+    );
+
+    return NextResponse.json({
+      qrImage: null,
+      qrisImageUrl: imageUrl,
+      amount: price,
+      provider: "QRIS",
+    });
+  }
+
+  // Fallback: generate QR dari string QRIS (jika admin belum upload gambar)
+  const staticQris = await getSetting(SETTING_KEYS.QRIS_STRING);
   if (!staticQris) {
-    return NextResponse.json({ error: "QRIS belum dikonfigurasi oleh admin" }, { status: 500 });
+    return NextResponse.json(
+      { error: "QRIS belum dikonfigurasi oleh admin. Silakan hubungi panitia." },
+      { status: 500 }
+    );
   }
 
   const dynamicQris = injectAmountToQRIS(staticQris, price);
@@ -45,12 +69,13 @@ export async function POST(req: NextRequest) {
 
   await prisma.registration.update({
     where: { id: registrationId },
-    data: { paymentProvider: provider === "SHOPEEPAY" ? "SHOPEEPAY" : "GOPAY" },
+    data: { paymentProvider: "GOPAY" },
   });
 
   return NextResponse.json({
     qrImage,
+    qrisImageUrl: null,
     amount: price,
-    provider: provider || "GOPAY",
+    provider: "QRIS",
   });
 }

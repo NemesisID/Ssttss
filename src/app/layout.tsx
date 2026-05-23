@@ -17,7 +17,9 @@ export const metadata: Metadata = {
   title: "Pendaftaran ISCOM - UPN Veteran Jawa Timur",
   description: "Form pendaftaran peserta ISCOM UPN Veteran Jawa Timur",
   icons: {
-    icon: "/logofav.png",
+    icon: [
+      { url: "/logofav.png", type: "image/png" },
+    ],
     shortcut: "/logofav.png",
     apple: "/logofav.png",
   },

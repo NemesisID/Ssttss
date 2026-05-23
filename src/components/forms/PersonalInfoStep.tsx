@@ -87,7 +87,7 @@ export default function PersonalInfoStep({ data, onChange, onNext }: Props) {
         <label className="text-slate-400 text-xs font-medium mb-1.5 block">Email UPN</label>
         <input
           type="email"
-          placeholder="nama@student.upnjatim.ac.id"
+          placeholder="npm@student.upnjatim.ac.id"
           value={data.email}
           onChange={(e) => onChange({ email: e.target.value })}
           className={inputClass("email")}
