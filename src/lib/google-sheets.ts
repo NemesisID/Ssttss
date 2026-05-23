@@ -29,10 +29,10 @@ export async function appendToSheet(data: {
   const row = [
     new Date().toISOString(),
     data.nama,
-    data.npm,
+    `'${data.npm}`, // Tambahkan kutip agar tidak dibaca sebagai angka
     data.prodi,
     data.email,
-    data.noWhatsapp,
+    `'${data.noWhatsapp}`, // Tambahkan kutip agar 0 di awal tidak hilang
     data.divisions.join(", "),
     data.plan,
     data.paymentStatus,
