@@ -6,10 +6,19 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Protect dash routes (except login)
-  if (pathname.startsWith("/dash") && !pathname.startsWith("/dash/login")) {
+  if (pathname.startsWith("/dash")) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    if (!token) {
-      return NextResponse.redirect(new URL("/dash/login", req.url));
+    
+    // If they are on the login page but already have a token, redirect to dashboard
+    if (pathname.startsWith("/dash/login")) {
+      if (token) {
+        return NextResponse.redirect(new URL("/dash", req.url));
+      }
+    } else {
+      // If they are on any other dash page and don't have a token, redirect to login
+      if (!token) {
+        return NextResponse.redirect(new URL("/dash/login", req.url));
+      }
     }
   }
 
@@ -32,5 +41,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dash/:path*", "/api/admin/:path*", "/api/dash/:path*"],
+  matcher: ["/dash", "/dash/:path*", "/api/admin/:path*", "/api/dash/:path*"],
 };

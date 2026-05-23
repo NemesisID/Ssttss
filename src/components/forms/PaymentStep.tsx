@@ -3,22 +3,17 @@
 import { useState, useEffect, useCallback } from "react";
 
 type Props = {
-  registrationId: string;
-  onSuccess: () => void;
+  onSuccess: (filePath: string) => void;
 };
 
-export default function PaymentStep({ registrationId, onSuccess }: Props) {
+export default function PaymentStep({ onSuccess }: Props) {
   const [qrImage, setQrImage] = useState<string | null>(null); // QR dinamis dengan nominal sudah terinjeksi
   const [amount, setAmount] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
   const generateQris = useCallback(async () => {
-    const res = await fetch("/api/payment/generate-qris", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ registrationId }),
-    });
+    const res = await fetch("/api/payment/generate-qris");
     const json = await res.json();
     if (res.ok) {
       setQrImage(json.qrImage);
@@ -26,7 +21,7 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
     } else {
       setError(json.error);
     }
-  }, [registrationId]);
+  }, []);
 
   useEffect(() => {
     generateQris();
@@ -41,15 +36,14 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("registrationId", registrationId);
 
     const res = await fetch("/api/payment/upload", { method: "POST", body: formData });
     const json = await res.json();
 
-    if (res.ok) {
-      onSuccess();
+    if (res.ok && json.filePath) {
+      onSuccess(json.filePath);
     } else {
-      setError(json.error);
+      setError(json.error || "Gagal upload bukti bayar");
     }
     setUploading(false);
   };

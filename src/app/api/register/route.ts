@@ -23,7 +23,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Data tidak valid", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { nama, npm, prodi, email, noWhatsapp, divisions, plan } = parsed.data;
+  const { nama, npm, prodi, email, noWhatsapp, divisions, plan, paymentProofUrl } = parsed.data;
+
+  if (plan === "PAID" && !paymentProofUrl) {
+    return NextResponse.json({ error: "Bukti pembayaran wajib diupload untuk paket spesial" }, { status: 400 });
+  }
 
   const existing = await prisma.registration.findFirst({
     where: { OR: [{ npm }, { email }] },
@@ -33,6 +37,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `${field} sudah terdaftar.` }, { status: 409 });
   }
 
+  const isPaid = plan === "PAID";
   const registration = await prisma.registration.create({
     data: {
       nama,
@@ -41,7 +46,11 @@ export async function POST(req: NextRequest) {
       email,
       noWhatsapp,
       plan,
-      paymentStatus: plan === "FREE" ? "PAID" : "PENDING",
+      paymentStatus: "PAID", // FREE dan PAID dua-duanya akan PAID (karena PAID sudah diverifikasi dari upload)
+      paymentProofUrl: isPaid ? paymentProofUrl : null,
+      paymentUploadedAt: isPaid ? new Date() : null,
+      paymentVerifiedAt: isPaid ? new Date() : null,
+      paymentProvider: isPaid ? "GOPAY" : null, // Default
       divisions: {
         create: divisions.map((d) => ({ division: d })),
       },
@@ -58,7 +67,7 @@ export async function POST(req: NextRequest) {
     noWhatsapp,
     divisions,
     plan,
-    paymentStatus: plan === "FREE" ? "PAID" : "PENDING",
+    paymentStatus: "PAID",
   }).catch(() => {});
 
   return NextResponse.json({

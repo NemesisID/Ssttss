@@ -16,6 +16,7 @@ export type FormData = {
   noWhatsapp: string;
   divisions: string[];
   plan: string;
+  paymentProofUrl?: string;
 };
 
 export default function RegisterPage() {
@@ -37,14 +38,20 @@ export default function RegisterPage() {
     setFormData((prev) => ({ ...prev, ...data }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (additionalData?: Partial<FormData>) => {
     setLoading(true);
     setError("");
+    
+    const dataToSubmit = { ...formData, ...additionalData };
+    if (additionalData) {
+      updateForm(additionalData);
+    }
+
     try {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSubmit),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -53,15 +60,19 @@ export default function RegisterPage() {
         return;
       }
       setRegistrationId(json.registrationId);
-      if (json.plan === "FREE") {
-        setStep(5);
-      } else {
-        setStep(4);
-      }
+      setStep(5); // Langsung ke SuccessStep karena data sudah komplit (baik FREE maupun PAID yg sudah bayar)
     } catch {
       setError("Gagal menghubungi server");
     }
     setLoading(false);
+  };
+
+  const handlePlanNext = () => {
+    if (formData.plan === "FREE") {
+      handleSubmit();
+    } else {
+      setStep(4); // Masuk ke PaymentStep TANPA disave ke DB dulu
+    }
   };
 
   return (
@@ -88,8 +99,8 @@ export default function RegisterPage() {
 
           {step === 1 && <PersonalInfoStep data={formData} onChange={updateForm} onNext={() => setStep(2)} />}
           {step === 2 && <DivisionStep data={formData} onChange={updateForm} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
-          {step === 3 && <PlanStep data={formData} onChange={updateForm} onNext={handleSubmit} onBack={() => setStep(2)} loading={loading} />}
-          {step === 4 && registrationId && <PaymentStep registrationId={registrationId} onSuccess={() => setStep(5)} />}
+          {step === 3 && <PlanStep data={formData} onChange={updateForm} onNext={handlePlanNext} onBack={() => setStep(2)} loading={loading} />}
+          {step === 4 && <PaymentStep onSuccess={(filePath) => handleSubmit({ paymentProofUrl: filePath })} />}
           {step === 5 && registrationId && <SuccessStep registrationId={registrationId} />}
         </div>
 

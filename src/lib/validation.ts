@@ -34,6 +34,7 @@ export const planSchema = z.object({
   plan: z.enum(["FREE", "PAID"], {
     errorMap: () => ({ message: "Pilih salah satu plan" }),
   }),
+  paymentProofUrl: z.string().optional(),
 });
 
 export const registrationSchema = personalInfoSchema

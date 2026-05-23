@@ -12,26 +12,9 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
-  const registrationId = formData.get("registrationId") as string | null;
 
-  if (!file || !registrationId) {
-    return NextResponse.json({ error: "File dan registrationId wajib diisi" }, { status: 400 });
-  }
-
-  const registration = await prisma.registration.findUnique({
-    where: { id: registrationId },
-  });
-
-  if (!registration) {
-    return NextResponse.json({ error: "Registrasi tidak ditemukan" }, { status: 404 });
-  }
-
-  if (registration.plan !== "PAID") {
-    return NextResponse.json({ error: "Plan gratis tidak perlu upload bukti" }, { status: 400 });
-  }
-
-  if (registration.paymentStatus === "PAID") {
-    return NextResponse.json({ error: "Pembayaran sudah dikonfirmasi" }, { status: 400 });
+  if (!file) {
+    return NextResponse.json({ error: "File wajib diisi" }, { status: 400 });
   }
 
   const result = await handlePaymentProofUpload(file);
@@ -39,16 +22,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
-  await prisma.registration.update({
-    where: { id: registrationId },
-    data: {
-      paymentProofUrl: result.filePath,
-      paymentStatus: "PAID",
-      paymentUploadedAt: new Date(),
-      paymentVerifiedAt: new Date(),
-      rejectionReason: null,
-    },
-  });
-
-  return NextResponse.json({ success: true, status: "PAID" });
+  return NextResponse.json({ success: true, filePath: result.filePath });
 }
