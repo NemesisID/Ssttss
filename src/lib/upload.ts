@@ -2,6 +2,7 @@ import sharp from "sharp";
 import path from "path";
 import fs from "fs/promises";
 import crypto from "crypto";
+import jsqr from "jsqr";
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || "./uploads/payment-proofs";
 const MAX_FILE_SIZE = (parseInt(process.env.MAX_FILE_SIZE_MB || "5") || 5) * 1024 * 1024;
@@ -78,7 +79,6 @@ async function decodeQrisFromImage(buffer: Buffer): Promise<string | null> {
       .raw()
       .toBuffer({ resolveWithObject: true });
 
-    const jsqr = (await import("jsqr")).default;
     const code = jsqr(
       new Uint8ClampedArray(data),
       info.width,
