@@ -48,9 +48,22 @@ export default function SuccessStep({ registrationId }: Props) {
         </div>
       </div>
 
-      <div>
+      <div className="space-y-3">
         <h2 className="text-xl font-bold text-white">Pendaftaran Berhasil!</h2>
-        <p className="text-slate-400 text-sm mt-2">Selamat bergabung di ISCOM 2026</p>
+        <p className="text-slate-300 text-sm leading-relaxed max-w-md mx-auto">
+          Terima kasih banyak telah mendaftar sebagai member resmi <strong>ISCOM 2026</strong>! 
+          Silakan bergabung ke grup WhatsApp divisi Kamu melalui tombol di bawah untuk koordinasi dan informasi lebih lanjut. 
+          Pastikan juga Kamu mengikuti Instagram kami di{" "}
+          <a
+            href="https://www.instagram.com/iscom_upnjatim"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold"
+          >
+            @iscom_upnjatim
+          </a>{" "}
+          untuk mendapatkan update dan informasi terbaru kedepannya!
+        </p>
       </div>
 
       {groups.length > 0 && (
