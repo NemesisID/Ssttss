@@ -16,13 +16,13 @@ export default function PlanStep({ data, onChange, onNext, onBack, loading }: Pr
       value: "FREE",
       label: "Free",
       price: "Rp 0",
-      features: ["Akses semua materi", "Sertifikat digital", "Grup WhatsApp divisi"],
+      features: ["Akses semua materi", "Sertifikat Peserta (S&K Berlaku)", "Grup WhatsApp divisi"],
     },
     {
       value: "PAID",
       label: "Premium",
       price: "Rp 15.000",
-      features: ["Semua benefit Free", "Sticker eksklusif ISCOM", "Gantungan kunci limited"],
+      features: ["Semua benefit Free", "Sticker eksklusif ISCOM", "Gantungan kunci ISCOM"],
       badge: "Recommended",
     },
   ];
