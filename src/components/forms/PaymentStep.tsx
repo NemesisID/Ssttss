@@ -8,8 +8,7 @@ type Props = {
 };
 
 export default function PaymentStep({ registrationId, onSuccess }: Props) {
-  const [qrImage, setQrImage] = useState<string | null>(null);         // Generated QR (fallback)
-  const [qrisImageUrl, setQrisImageUrl] = useState<string | null>(null); // Gambar upload admin (prioritas)
+  const [qrImage, setQrImage] = useState<string | null>(null); // QR dinamis dengan nominal sudah terinjeksi
   const [amount, setAmount] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -22,8 +21,7 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
     });
     const json = await res.json();
     if (res.ok) {
-      setQrisImageUrl(json.qrisImageUrl); // Gambar upload admin
-      setQrImage(json.qrImage);           // Fallback generated QR
+      setQrImage(json.qrImage);
       setAmount(json.amount);
     } else {
       setError(json.error);
@@ -56,10 +54,6 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
     setUploading(false);
   };
 
-  // Tampilkan gambar: prioritaskan gambar upload admin, fallback ke generated QR
-  const displayImage = qrisImageUrl || qrImage;
-  const hasQris = !!displayImage;
-
   return (
     <div className="space-y-5">
       <div>
@@ -76,20 +70,21 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
         </div>
       )}
 
-      {!hasQris && !error && (
+      {!qrImage && !error && (
         <div className="flex items-center justify-center py-10">
           <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
-      {hasQris && (
+      {qrImage && (
         <div className="text-center space-y-3">
+          {/* QR Code dinamis — nominal sudah terinjeksi, peserta tinggal scan */}
           <div className="bg-white p-3 rounded-2xl inline-block shadow-xl shadow-black/20">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={displayImage!}
+              src={qrImage}
               alt="QRIS Pembayaran"
-              className="w-56 h-56 rounded-lg object-contain"
+              className="w-56 h-56 rounded-lg"
             />
           </div>
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08]">
@@ -99,12 +94,13 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
           <p className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 font-bold text-3xl">
             Rp {amount.toLocaleString("id-ID")}
           </p>
+          <p className="text-slate-500 text-xs">Nominal sudah terisi otomatis — langsung scan &amp; bayar</p>
         </div>
       )}
 
       <div className="border-t border-white/[0.06] pt-5">
         <p className="text-slate-400 text-sm mb-3 text-center">Setelah bayar, upload bukti pembayaran</p>
-        <label className={`block w-full py-4 px-4 rounded-xl text-center cursor-pointer transition-all duration-200 ${
+        <label className={`block w-full py-4 px-4 rounded-xl text-center transition-all duration-200 ${
           uploading
             ? "bg-slate-700 text-slate-400"
             : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-medium shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 active:scale-[0.98]"

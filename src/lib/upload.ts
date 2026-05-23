@@ -59,7 +59,39 @@ export async function deletePaymentProof(filePath: string): Promise<void> {
 
 const QRIS_UPLOAD_DIR = process.env.QRIS_UPLOAD_DIR || "./uploads/qris";
 
-export async function handleQrisImageUpload(file: File): Promise<UploadResult> {
+interface QrisUploadResult {
+  success: boolean;
+  filePath?: string;
+  qrisString?: string;
+  error?: string;
+}
+
+/**
+ * Decode string QRIS dari gambar menggunakan jsqr + sharp.
+ * Mengembalikan null jika QR code tidak terdeteksi.
+ */
+async function decodeQrisFromImage(buffer: Buffer): Promise<string | null> {
+  try {
+    // Konversi ke raw RGBA pixel data menggunakan sharp
+    const { data, info } = await sharp(buffer)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const jsqr = (await import("jsqr")).default;
+    const code = jsqr(
+      new Uint8ClampedArray(data),
+      info.width,
+      info.height
+    );
+
+    return code?.data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function handleQrisImageUpload(file: File): Promise<QrisUploadResult> {
   if (!ALLOWED_TYPES.includes(file.type)) {
     return { success: false, error: "File harus berformat JPG, PNG, atau WebP" };
   }
@@ -77,6 +109,17 @@ export async function handleQrisImageUpload(file: File): Promise<UploadResult> {
     return { success: false, error: "File bukan gambar yang valid" };
   }
 
+  // Decode QRIS string dari gambar sebelum dicompress
+  const qrisString = await decodeQrisFromImage(buffer);
+  if (!qrisString) {
+    return { success: false, error: "QR Code tidak terdeteksi di gambar. Pastikan gambar berisi QR Code QRIS yang jelas." };
+  }
+
+  // Validasi format QRIS (harus mulai dengan "000201")
+  if (!qrisString.startsWith("000201")) {
+    return { success: false, error: "Gambar tidak mengandung QR Code QRIS yang valid. Pastikan menggunakan QRIS statis dari bank/e-wallet." };
+  }
+
   // Simpan sebagai qris.webp (replace file lama jika ada)
   const compressed = await sharp(buffer)
     .resize(800, 800, { fit: "inside", withoutEnlargement: true })
@@ -88,7 +131,7 @@ export async function handleQrisImageUpload(file: File): Promise<UploadResult> {
   const filePath = path.join(QRIS_UPLOAD_DIR, filename);
   await fs.writeFile(filePath, compressed);
 
-  return { success: true, filePath: `/uploads/qris/${filename}` };
+  return { success: true, filePath: `/uploads/qris/${filename}`, qrisString };
 }
 
 export async function deleteQrisImage(): Promise<void> {
@@ -99,4 +142,3 @@ export async function deleteQrisImage(): Promise<void> {
     // File might not exist, ignore
   }
 }
-

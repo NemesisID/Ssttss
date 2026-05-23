@@ -30,42 +30,24 @@ export async function POST(req: NextRequest) {
   const priceStr = await getSetting(SETTING_KEYS.PAID_PLAN_PRICE);
   const price = parseInt(priceStr || "15000", 10);
 
-  // Cek apakah admin sudah upload gambar QRIS
-  const qrisImagePath = await getSetting(SETTING_KEYS.QRIS_IMAGE_PATH);
-
-  if (qrisImagePath) {
-    // Admin sudah upload gambar QRIS — langsung kembalikan URL gambar
-    // Update payment provider ke GOPAY sebagai default (untuk backward compat)
-    await prisma.registration.update({
-      where: { id: registrationId },
-      data: { paymentProvider: "GOPAY" },
-    });
-
-    // Ubah path file menjadi URL API yang bisa diakses
-    const imageUrl = qrisImagePath.replace(
-      /^\/uploads\/qris\//,
-      "/api/uploads/qris/"
-    );
-
-    return NextResponse.json({
-      qrImage: null,
-      qrisImageUrl: imageUrl,
-      amount: price,
-      provider: "QRIS",
-    });
-  }
-
-  // Fallback: generate QR dari string QRIS (jika admin belum upload gambar)
+  // Ambil string QRIS statis yang telah di-decode dari gambar upload admin
   const staticQris = await getSetting(SETTING_KEYS.QRIS_STRING);
   if (!staticQris) {
     return NextResponse.json(
-      { error: "QRIS belum dikonfigurasi oleh admin. Silakan hubungi panitia." },
+      { error: "QRIS belum dikonfigurasi. Silakan hubungi panitia." },
       { status: 500 }
     );
   }
 
+  // Inject nominal ke QRIS statis → menjadi QRIS dinamis
   const dynamicQris = injectAmountToQRIS(staticQris, price);
-  const qrImage = await QRCode.toDataURL(dynamicQris, { width: 400, margin: 2 });
+
+  // Generate gambar QR code dari QRIS dinamis
+  const qrImage = await QRCode.toDataURL(dynamicQris, {
+    width: 400,
+    margin: 2,
+    color: { dark: "#000000", light: "#ffffff" },
+  });
 
   await prisma.registration.update({
     where: { id: registrationId },
@@ -73,8 +55,7 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({
-    qrImage,
-    qrisImageUrl: null,
+    qrImage,   // QR code yang sudah berisi nominal → peserta tinggal scan
     amount: price,
     provider: "QRIS",
   });

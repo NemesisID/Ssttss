@@ -15,7 +15,7 @@ export async function GET() {
   return NextResponse.json({ imagePath: imagePath || null });
 }
 
-/** POST: upload gambar QRIS baru */
+/** POST: upload gambar QRIS baru — sistem otomatis decode string QRIS dari gambar */
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -30,16 +30,19 @@ export async function POST(req: NextRequest) {
   }
 
   const result = await handleQrisImageUpload(file);
-  if (!result.success || !result.filePath) {
+  if (!result.success || !result.filePath || !result.qrisString) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
+  // Simpan path gambar (untuk preview di admin)
   await setSetting(SETTING_KEYS.QRIS_IMAGE_PATH, result.filePath);
+  // Simpan string QRIS hasil decode (untuk generate QR dinamis saat peserta bayar)
+  await setSetting(SETTING_KEYS.QRIS_STRING, result.qrisString);
 
   return NextResponse.json({ imagePath: result.filePath });
 }
 
-/** DELETE: hapus gambar QRIS */
+/** DELETE: hapus gambar QRIS dan string QRIS */
 export async function DELETE() {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -48,6 +51,7 @@ export async function DELETE() {
 
   await deleteQrisImage();
   await setSetting(SETTING_KEYS.QRIS_IMAGE_PATH, "");
+  await setSetting(SETTING_KEYS.QRIS_STRING, "");
 
   return NextResponse.json({ success: true });
 }
