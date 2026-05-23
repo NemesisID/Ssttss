@@ -13,7 +13,7 @@ export default function PaymentStep({ onSuccess }: Props) {
   const [error, setError] = useState("");
 
   const generateQris = useCallback(async () => {
-    const res = await fetch("/api/payment/generate-qris");
+    const res = await fetch("/api/payment/generate-qris", { cache: "no-store" });
     const json = await res.json();
     if (res.ok) {
       setQrImage(json.qrImage);
