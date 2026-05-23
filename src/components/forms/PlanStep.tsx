@@ -13,7 +13,7 @@ type Props = {
 export default function PlanStep({ data, onChange, onNext, onBack, loading }: Props) {
   const plans = [
     {
-      value: "Gratis",
+      value: "Paket Gratis",
       label: "Free",
       price: "Rp 0",
       features: ["Akses semua materi", "Sertifikat Peserta (S&K Berlaku)", "Grup WhatsApp divisi"],
