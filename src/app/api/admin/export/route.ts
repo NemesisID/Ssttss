@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   });
 
   const header = "Timestamp,Nama,NPM,Prodi,Email,No WhatsApp,Divisi,Plan,Status Pembayaran\n";
-  const rows = registrations.map((r) =>
+  const rows = registrations.map((r: any) =>
     [
       r.createdAt.toISOString(),
       `"${r.nama}"`,
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       r.prodi,
       r.email,
       r.noWhatsapp,
-      `"${r.divisions.map((d) => d.division).join(", ")}"`,
+      `"${r.divisions.map((d: any) => d.division).join(", ")}"`,
       r.plan,
       r.paymentStatus,
     ].join(",")

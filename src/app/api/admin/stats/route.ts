@@ -24,7 +24,7 @@ export async function GET() {
   ]);
 
   const divisionStats = Object.fromEntries(
-    divisions.map((d) => [d.division, d._count.division])
+    divisions.map((d: any) => [d.division, d._count.division])
   );
 
   return NextResponse.json({

@@ -24,12 +24,12 @@ export async function GET(
 
   // If paid or free, include WA group links
   if (registration.paymentStatus === "PAID") {
-    const divisionNames = registration.divisions.map((d) => d.division);
+    const divisionNames = registration.divisions.map((d: any) => d.division);
     const groups = await prisma.whatsAppGroup.findMany({
       where: { division: { in: divisionNames }, isActive: true },
     });
 
-    response.waGroups = groups.map((g) => ({
+    response.waGroups = groups.map((g: any) => ({
       division: g.division,
       link: decrypt(g.link),
     }));

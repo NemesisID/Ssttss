@@ -12,7 +12,7 @@ export async function GET() {
 
   const groups = await prisma.whatsAppGroup.findMany();
   return NextResponse.json(
-    groups.map((g) => ({ ...g, link: decrypt(g.link) }))
+    groups.map((g: any) => ({ ...g, link: decrypt(g.link) }))
   );
 }
 
