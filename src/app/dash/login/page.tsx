@@ -36,8 +36,6 @@ export default function AdminLoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <img src="/logo.png" alt="ISCOM" className="h-12 w-auto mx-auto mb-4 object-contain" />
-          <h1 className="text-xl font-bold text-white">Admin Panel</h1>
-          <p className="text-slate-500 text-sm mt-1">ISCOM UPN Veteran Jawa Timur</p>
         </div>
 
           {/* Card */}

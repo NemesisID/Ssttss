@@ -1,16 +1,30 @@
 import { z } from "zod";
 
 export const personalInfoSchema = z.object({
-  nama: z.string().min(3, "Nama minimal 3 karakter").max(255),
-  npm: z.string().regex(/^\d{8,20}$/, "NPM harus berupa angka 8-20 digit"),
-  prodi: z.enum(["INFORMATIKA", "SISTEM_INFORMASI", "SAINS_DATA", "BISNIS_DIGITAL"]),
+  nama: z
+    .string()
+    .min(1, "Nama lengkap wajib diisi")
+    .min(3, "Nama terlalu pendek, minimal 3 karakter")
+    .max(255),
+  npm: z
+    .string()
+    .min(1, "NPM wajib diisi")
+    .regex(/^\d{8,20}$/, "Format NPM salah, harus angka 8-20 digit"),
+  prodi: z
+    .string()
+    .min(1, "Program studi wajib dipilih")
+    .refine((val) => ["INFORMATIKA", "SISTEM_INFORMASI", "SAINS_DATA", "BISNIS_DIGITAL"].includes(val), {
+      message: "Pilih salah satu program studi",
+    }),
   email: z
     .string()
-    .email("Email tidak valid")
-    .regex(/@student\.upnjatim\.ac\.id$/, "Harus menggunakan email @student.upnjatim.ac.id"),
+    .min(1, "Email wajib diisi")
+    .email("Format email tidak valid")
+    .regex(/@student\.upnjatim\.ac\.id$/, "Gunakan email kampus @student.upnjatim.ac.id"),
   noWhatsapp: z
     .string()
-    .regex(/^(08|\+628)\d{8,13}$/, "Nomor WhatsApp tidak valid"),
+    .min(1, "Nomor WhatsApp wajib diisi")
+    .regex(/^(08|\+628)\d{8,13}$/, "Format nomor salah, contoh: 08123456789"),
 });
 
 export const divisionSchema = z.object({
@@ -20,7 +34,9 @@ export const divisionSchema = z.object({
 });
 
 export const planSchema = z.object({
-  plan: z.enum(["FREE", "PAID"]),
+  plan: z.enum(["FREE", "PAID"], {
+    errorMap: () => ({ message: "Pilih salah satu plan" }),
+  }),
 });
 
 export const registrationSchema = personalInfoSchema

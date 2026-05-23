@@ -41,10 +41,10 @@ export default function DashboardPage() {
   }
 
   const cards = [
-    { label: "Total Peserta", value: stats.total, icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z", gradient: "from-blue-500 to-cyan-500", bg: "from-blue-500/10 to-cyan-500/10" },
-    { label: "Plan Gratis", value: stats.free, icon: "M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7", gradient: "from-emerald-500 to-teal-500", bg: "from-emerald-500/10 to-teal-500/10" },
-    { label: "Plan Berbayar", value: stats.paid, icon: "M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z", gradient: "from-purple-500 to-pink-500", bg: "from-purple-500/10 to-pink-500/10" },
-    { label: "Terverifikasi", value: stats.verified, icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z", gradient: "from-emerald-500 to-green-500", bg: "from-emerald-500/10 to-green-500/10" },
+    { label: "Total Peserta", value: stats.total },
+    { label: "Plan Gratis", value: stats.free },
+    { label: "Plan Berbayar", value: stats.paid },
+    { label: "Terverifikasi", value: stats.verified },
   ];
 
   return (
@@ -62,13 +62,7 @@ export default function DashboardPage() {
             key={card.label}
             className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] rounded-2xl p-5 hover:border-white/[0.1] transition-all duration-200"
           >
-            <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${card.bg} rounded-full blur-2xl -translate-y-8 translate-x-8 opacity-50`} />
             <div className="relative">
-              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${card.bg} flex items-center justify-center mb-3`}>
-                <svg className={`w-5 h-5 bg-gradient-to-r ${card.gradient} bg-clip-text`} fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'currentColor' }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={card.icon} />
-                </svg>
-              </div>
               <p className="text-3xl font-bold text-white">{card.value}</p>
               <p className="text-slate-500 text-sm mt-0.5">{card.label}</p>
             </div>
