@@ -26,7 +26,10 @@ export default function SettingsPage() {
       fetch("/api/admin/settings").then((r) => r.json()),
       fetch("/api/admin/qris-image").then((r) => r.json()),
     ]).then(([settingsData, qrisData]) => {
-      setSettings(settingsData);
+      setSettings({
+        paid_plan_price: settingsData.paid_plan_price,
+        registration_open: settingsData.registration_open,
+      });
       if (qrisData.imagePath) {
         setQrisImageUrl(
           qrisData.imagePath.replace(/^\/uploads\/qris\//, "/api/uploads/qris/") + "?t=" + Date.now()
