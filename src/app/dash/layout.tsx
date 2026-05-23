@@ -10,11 +10,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
 
-  const isLoginPage = pathname === "/admin/login";
+  const isLoginPage = pathname === "/dash/login";
 
   useEffect(() => {
     if (status === "unauthenticated" && !isLoginPage) {
-      router.push("/admin/login");
+      router.push("/dash/login");
     }
   }, [status, router, isLoginPage]);
 

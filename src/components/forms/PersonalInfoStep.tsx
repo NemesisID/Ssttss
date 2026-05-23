@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { personalInfoSchema } from "@/lib/validation";
-import type { FormData } from "@/app/(public)/register/page";
+import type { FormData } from "@/app/(public)/open-recruitment/page";
 
 type Props = {
   data: FormData;

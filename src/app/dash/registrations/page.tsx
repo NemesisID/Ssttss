@@ -156,7 +156,7 @@ export default function RegistrationsPage() {
                     </span>
                   </td>
                   <td className="p-4">
-                    <Link href={`/admin/registrations/${r.id}`} className="text-blue-400 hover:text-blue-300 text-xs font-medium hover:underline">
+                    <Link href={`/dash/registrations/${r.id}`} className="text-blue-400 hover:text-blue-300 text-xs font-medium hover:underline">
                       Detail
                     </Link>
                   </td>

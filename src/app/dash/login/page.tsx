@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
       setError("Username atau password salah");
       setLoading(false);
     } else {
-      router.push("/admin/dashboard");
+      router.push("/dash/dashboard");
     }
   };
 
