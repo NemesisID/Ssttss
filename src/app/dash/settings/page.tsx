@@ -29,7 +29,7 @@ export default function SettingsPage() {
       setSettings(settingsData);
       if (qrisData.imagePath) {
         setQrisImageUrl(
-          qrisData.imagePath.replace(/^\/uploads\/qris\//, "/api/uploads/qris/")
+          qrisData.imagePath.replace(/^\/uploads\/qris\//, "/api/uploads/qris/") + "?t=" + Date.now()
         );
       }
       setLoading(false);
