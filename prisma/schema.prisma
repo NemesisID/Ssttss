@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Prodi {
+  INFORMATIKA
+  SISTEM_INFORMASI
+  SAINS_DATA
+  BISNIS_DIGITAL
+}
+
+enum Division {
+  PROGRAMMING
+  DATA
+  BUSINESS_PLAN
+  UI_UX
+}
+
+enum Plan {
+  FREE
+  PAID
+}
+
+enum PaymentStatus {
+  PENDING
+  UPLOADED
+  PAID
+  REJECTED
+}
+
+enum PaymentProvider {
+  GOPAY
+  SHOPEEPAY
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+}
+
+model Registration {
+  id                String               @id @default(cuid())
+  nama              String               @db.VarChar(255)
+  npm               String               @unique @db.VarChar(20)
+  prodi             Prodi
+  email             String               @unique @db.VarChar(255)
+  noWhatsapp        String               @db.VarChar(20)
+  plan              Plan
+  paymentStatus     PaymentStatus        @default(PENDING)
+  paymentProofUrl   String?              @db.VarChar(500)
+  paymentProvider   PaymentProvider?
+  paymentUploadedAt DateTime?
+  paymentVerifiedAt DateTime?
+  rejectionReason   String?              @db.VarChar(255)
+  divisions         RegistrationDivision[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([paymentStatus])
+  @@index([createdAt])
+}
+
+model RegistrationDivision {
+  id             String       @id @default(cuid())
+  registrationId String
+  division       Division
+  registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@unique([registrationId, division])
+  @@index([registrationId])
+}
+
+model WhatsAppGroup {
+  id       String   @id @default(cuid())
+  division Division @unique
+  link     String   @db.Text
+  isActive Boolean  @default(true)
+}
+
+model Admin {
+  id           String    @id @default(cuid())
+  username     String    @unique @db.VarChar(100)
+  passwordHash String    @db.VarChar(255)
+  role         AdminRole @default(ADMIN)
+  createdAt    DateTime  @default(now())
+}
+
+model SiteSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique @db.VarChar(100)
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
