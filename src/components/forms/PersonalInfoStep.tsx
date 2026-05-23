@@ -12,6 +12,7 @@ type Props = {
 
 export default function PersonalInfoStep({ data, onChange, onNext }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [checking, setChecking] = useState(false);
 
   const validate = () => {
     const result = personalInfoSchema.safeParse(data);
@@ -27,8 +28,44 @@ export default function PersonalInfoStep({ data, onChange, onNext }: Props) {
     return true;
   };
 
-  const handleNext = () => {
-    if (validate()) onNext();
+  const handleNext = async () => {
+    if (!validate()) return;
+    
+    setChecking(true);
+    try {
+      const res = await fetch("/api/check-participant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ npm: data.npm, email: data.email }),
+      });
+      
+      if (!res.ok) {
+        // Fallback or rate limit, we let them pass and catch at final step if needed
+        // Or we can show the error from the response
+        const json = await res.json();
+        if (json.error) {
+          setErrors({ ...errors, server: json.error });
+        }
+        setChecking(false);
+        return;
+      }
+      
+      const result = await res.json();
+      if (result.exists) {
+        if (result.field === "NPM") {
+          setErrors({ npm: "NPM sudah terdaftar" });
+        } else {
+          setErrors({ email: "Email sudah terdaftar" });
+        }
+        setChecking(false);
+        return;
+      }
+      
+      onNext();
+    } catch (err) {
+      setChecking(false);
+      onNext(); // Allow bypassing if server is down (caught later)
+    }
   };
 
   const inputClass = (field: string) =>
@@ -42,6 +79,12 @@ export default function PersonalInfoStep({ data, onChange, onNext }: Props) {
         <h2 className="text-lg font-semibold text-white">Data Diri</h2>
         <p className="text-slate-500 text-sm mt-0.5">Lengkapi informasi pribadi kamu</p>
       </div>
+
+      {errors.server && (
+        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+          {errors.server}
+        </div>
+      )}
 
       <div>
         <label className="text-slate-400 text-xs font-medium mb-1.5 block">Nama Lengkap</label>
@@ -109,9 +152,20 @@ export default function PersonalInfoStep({ data, onChange, onNext }: Props) {
 
       <button
         onClick={handleNext}
-        className="w-full py-3.5 mt-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 active:scale-[0.98]"
+        disabled={checking}
+        className="w-full py-3.5 mt-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 active:scale-[0.98] disabled:from-slate-700 disabled:to-slate-700 disabled:shadow-none disabled:cursor-not-allowed"
       >
-        Selanjutnya
+        {checking ? (
+          <span className="flex items-center justify-center gap-2">
+            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Mengecek Data...
+          </span>
+        ) : (
+          "Selanjutnya"
+        )}
       </button>
     </div>
   );

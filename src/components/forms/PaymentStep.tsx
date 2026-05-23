@@ -87,10 +87,6 @@ export default function PaymentStep({ registrationId, onSuccess }: Props) {
               className="w-56 h-56 rounded-lg"
             />
           </div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08]">
-            <div className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span className="text-slate-300 text-xs">QRIS</span>
-          </div>
           <p className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 font-bold text-3xl">
             Rp {amount.toLocaleString("id-ID")}
           </p>
