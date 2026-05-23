@@ -13,14 +13,14 @@ type Props = {
 export default function PlanStep({ data, onChange, onNext, onBack, loading }: Props) {
   const plans = [
     {
-      value: "Paket Gratis",
-      label: "Free",
+      value: "FREE",
+      label: "Paket Gratis",
       price: "Rp 0",
       features: ["Akses semua materi", "Sertifikat Peserta (S&K Berlaku)", "Grup WhatsApp divisi"],
     },
     {
-      value: "Paket Spesial",
-      label: "Premium",
+      value: "PAID",
+      label: "Paket Spesial",
       price: "Rp 15.000",
       features: ["Semua benefit Free", "Sticker eksklusif ISCOM", "Gantungan kunci ISCOM"],
       badge: "Rekomendasi",

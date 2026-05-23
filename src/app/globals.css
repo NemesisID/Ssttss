@@ -23,6 +23,14 @@ body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
 
+button,
+[role="button"],
+a[href],
+label[for],
+label:has(input) {
+  cursor: pointer;
+}
+
 select option {
   background: #1a1f2e;
   color: #e2e8f0;
