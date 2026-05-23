@@ -52,6 +52,9 @@ export default function SettingsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(settings),
     });
+    
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     if (res.ok) {
       showMessage("Settings berhasil disimpan");
     } else {
@@ -184,6 +187,7 @@ export default function SettingsPage() {
               type="number"
               value={settings.paid_plan_price || ""}
               onChange={(e) => setSettings({ ...settings, paid_plan_price: e.target.value })}
+              onWheel={(e) => (e.target as HTMLInputElement).blur()}
               className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 hover:border-white/[0.15] transition-all"
             />
           </div>
