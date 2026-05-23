@@ -26,7 +26,16 @@ export async function GET(req: NextRequest) {
   const header = "Timestamp,Nama,NPM,Prodi,Email,No WhatsApp,Divisi,Plan,Status Pembayaran\n";
   const rows = registrations.map((r: any) =>
     [
-      r.createdAt.toISOString(),
+      new Date(r.createdAt).toLocaleString("id-ID", {
+        timeZone: "Asia/Jakarta",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }).replace(/\./g, ":"),
       `"${r.nama}"`,
       r.npm,
       r.prodi,

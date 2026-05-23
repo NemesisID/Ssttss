@@ -27,7 +27,16 @@ export async function appendToSheet(data: {
   const sheets = google.sheets({ version: "v4", auth });
 
   const row = [
-    new Date().toISOString(),
+    new Date().toLocaleString("id-ID", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).replace(/\./g, ":"),
     data.nama,
     `'${data.npm}`, // Tambahkan kutip agar tidak dibaca sebagai angka
     data.prodi,
