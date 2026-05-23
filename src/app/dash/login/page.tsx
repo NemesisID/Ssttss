@@ -31,21 +31,14 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <main className="min-h-screen relative overflow-hidden bg-[#0a0e1a]">
-      {/* Background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-[20%] left-[30%] w-[400px] h-[400px] rounded-full bg-blue-600/8 blur-[100px]" />
-        <div className="absolute bottom-[20%] right-[20%] w-[300px] h-[300px] rounded-full bg-purple-600/8 blur-[100px]" />
-      </div>
-
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-        <div className="w-full max-w-sm">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <img src="/logo.png" alt="ISCOM" className="w-14 h-14 mx-auto mb-4 drop-shadow-lg" />
-            <h1 className="text-xl font-bold text-white">Admin Panel</h1>
-            <p className="text-slate-500 text-sm mt-1">ISCOM UPN Veteran Jawa Timur</p>
-          </div>
+    <main className="min-h-screen bg-[#0b0f1a] flex items-center justify-center p-4">
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <img src="/logo.png" alt="ISCOM" className="h-12 w-auto mx-auto mb-4 object-contain" />
+          <h1 className="text-xl font-bold text-white">Admin Panel</h1>
+          <p className="text-slate-500 text-sm mt-1">ISCOM UPN Veteran Jawa Timur</p>
+        </div>
 
           {/* Card */}
           <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] rounded-2xl p-7 shadow-2xl shadow-black/20">
@@ -99,7 +92,6 @@ export default function AdminLoginPage() {
             </form>
           </div>
         </div>
-      </div>
     </main>
   );
 }

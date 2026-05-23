@@ -20,7 +20,7 @@ export default function Sidebar() {
       {/* Brand */}
       <div className="mb-8 px-2">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="ISCOM" className="w-9 h-9 rounded-xl" />
+          <img src="/logo.png" alt="ISCOM" className="h-8 w-auto object-contain" />
           <div>
             <h2 className="text-sm font-bold text-white">ISCOM</h2>
             <p className="text-[10px] text-slate-500 font-medium tracking-wide">ADMIN PANEL</p>
