@@ -74,6 +74,13 @@ export default function PlanStep({ data, onChange, onNext, onBack, loading }: Pr
                       </li>
                     ))}
                   </ul>
+                  {isPaid && (
+                    <img
+                      src="/merch.jpeg"
+                      alt="Merchandise ISCOM"
+                      className="mt-4 w-full h-auto object-contain rounded-lg"
+                    />
+                  )}
                 </div>
               </div>
             </button>
