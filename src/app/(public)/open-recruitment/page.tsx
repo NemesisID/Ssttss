@@ -97,7 +97,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {step === 1 && <PersonalInfoStep data={formData} onChange={updateForm} onNext={() => setStep(2)} />}
+          {step === 1 && <PersonalInfoStep data={formData} onChange={updateForm} onNext={() => setStep(2)} onAlreadyRegistered={(id) => { setRegistrationId(id); setStep(5); }} />}
           {step === 2 && <DivisionStep data={formData} onChange={updateForm} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
           {step === 3 && <PlanStep data={formData} onChange={updateForm} onNext={handlePlanNext} onBack={() => setStep(2)} loading={loading} />}
           {step === 4 && <PaymentStep onSuccess={(filePath) => handleSubmit({ paymentProofUrl: filePath })} />}

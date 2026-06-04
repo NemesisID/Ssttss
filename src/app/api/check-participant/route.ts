@@ -19,11 +19,14 @@ export async function POST(req: NextRequest) {
 
     const existing = await prisma.registration.findFirst({
       where: { OR: [{ npm }, { email }] },
+      select: { id: true, npm: true, email: true },
     });
 
     if (existing) {
       const field = existing.npm === npm ? "NPM" : "Email";
-      return NextResponse.json({ exists: true, field });
+      // Jika NPM sudah terdaftar, kembalikan registrationId agar bisa redirect ke halaman sukses
+      const registrationId = field === "NPM" ? existing.id : undefined;
+      return NextResponse.json({ exists: true, field, registrationId });
     }
 
     return NextResponse.json({ exists: false });

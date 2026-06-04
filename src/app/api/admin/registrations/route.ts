@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
       { nama: { contains: search } },
       { npm: { contains: search } },
       { email: { contains: search } },
+      { noWhatsapp: { contains: search } },
     ];
   }
   if (status) where.paymentStatus = status;

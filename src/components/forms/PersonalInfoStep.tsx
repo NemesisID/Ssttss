@@ -8,9 +8,10 @@ type Props = {
   data: FormData;
   onChange: (data: Partial<FormData>) => void;
   onNext: () => void;
+  onAlreadyRegistered: (registrationId: string) => void;
 };
 
-export default function PersonalInfoStep({ data, onChange, onNext }: Props) {
+export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegistered }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [checking, setChecking] = useState(false);
 
@@ -40,8 +41,6 @@ export default function PersonalInfoStep({ data, onChange, onNext }: Props) {
       });
       
       if (!res.ok) {
-        // Fallback or rate limit, we let them pass and catch at final step if needed
-        // Or we can show the error from the response
         const json = await res.json();
         if (json.error) {
           setErrors({ ...errors, server: json.error });
@@ -52,8 +51,10 @@ export default function PersonalInfoStep({ data, onChange, onNext }: Props) {
       
       const result = await res.json();
       if (result.exists) {
-        if (result.field === "NPM") {
-          setErrors({ npm: "NPM sudah terdaftar" });
+        if (result.field === "NPM" && result.registrationId) {
+          // NPM sudah terdaftar → langsung ke halaman sukses
+          onAlreadyRegistered(result.registrationId);
+          return;
         } else {
           setErrors({ email: "Email sudah terdaftar" });
         }

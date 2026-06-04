@@ -19,6 +19,7 @@ export async function appendToSheet(data: {
   divisions: string[];
   plan: string;
   paymentStatus: string;
+  paymentProofUrl?: string | null;
 }) {
   const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
   if (!spreadsheetId) return;
@@ -39,17 +40,18 @@ export async function appendToSheet(data: {
     }).replace(/\./g, ":"),
     data.nama,
     `'${data.npm}`, // Tambahkan kutip agar tidak dibaca sebagai angka
-    data.prodi,
+    data.prodi.replace(/_/g, " "),
     data.email,
     `'${data.noWhatsapp}`, // Tambahkan kutip agar 0 di awal tidak hilang
     data.divisions.join(", "),
     data.plan,
     data.paymentStatus,
+    data.paymentProofUrl || "-",
   ];
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: "Sheet1!A:I",
+    range: "Sheet1!A:J",
     valueInputOption: "USER_ENTERED",
     requestBody: { values: [row] },
   });
@@ -78,5 +80,66 @@ export async function updateSheetPaymentStatus(npm: string, status: string) {
     range: `Sheet1!I${rowIndex + 1}`,
     valueInputOption: "USER_ENTERED",
     requestBody: { values: [[status]] },
+  });
+}
+
+export async function syncAllToSheet(registrations: {
+  createdAt: Date;
+  nama: string;
+  npm: string;
+  prodi: string;
+  email: string;
+  noWhatsapp: string;
+  divisions: { division: string }[];
+  plan: string;
+  paymentStatus: string;
+  paymentProofUrl?: string | null;
+}[]) {
+  const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
+  if (!spreadsheetId) return;
+
+  const auth = getAuth();
+  const sheets = google.sheets({ version: "v4", auth });
+
+  // Header row (same columns as detail page)
+  const header = [
+    "Timestamp", "Nama", "NPM", "Program Studi", "Email",
+    "No WhatsApp", "Divisi", "Plan", "Status", "Bukti Pembayaran",
+  ];
+
+  const rows = registrations.map((r) => [
+    new Date(r.createdAt).toLocaleString("id-ID", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).replace(/\./g, ":"),
+    r.nama,
+    `'${r.npm}`,
+    r.prodi.replace(/_/g, " "),
+    r.email,
+    `'${r.noWhatsapp}`,
+    r.divisions.map((d) => d.division.replace(/_/g, " ")).join(", "),
+    r.plan,
+    r.paymentStatus,
+    r.paymentProofUrl || "-",
+  ]);
+
+  // Clear the entire sheet first
+  await sheets.spreadsheets.values.clear({
+    spreadsheetId,
+    range: "Sheet1",
+  });
+
+  // Write header + all rows
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: "Sheet1!A1",
+    valueInputOption: "USER_ENTERED",
+    requestBody: { values: [header, ...rows] },
   });
 }

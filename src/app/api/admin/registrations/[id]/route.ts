@@ -45,3 +45,21 @@ export async function PATCH(
 
   return NextResponse.json(registration);
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+
+  // Delete divisions first (cascade), then registration
+  await prisma.registrationDivision.deleteMany({ where: { registrationId: id } });
+  await prisma.registration.delete({ where: { id } });
+
+  return NextResponse.json({ success: true });
+}

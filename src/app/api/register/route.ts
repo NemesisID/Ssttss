@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       email,
       noWhatsapp,
       plan,
-      paymentStatus: "PAID", // FREE dan PAID dua-duanya akan PAID (karena PAID sudah diverifikasi dari upload)
+      paymentStatus: "DONE", // FREE dan PAID dua-duanya langsung DONE
       paymentProofUrl: isPaid ? paymentProofUrl : null,
       paymentUploadedAt: isPaid ? new Date() : null,
       paymentVerifiedAt: isPaid ? new Date() : null,
@@ -67,7 +67,8 @@ export async function POST(req: NextRequest) {
     noWhatsapp,
     divisions,
     plan,
-    paymentStatus: "PAID",
+    paymentStatus: "DONE",
+    paymentProofUrl: isPaid ? paymentProofUrl : null,
   }).catch(() => {});
 
   return NextResponse.json({

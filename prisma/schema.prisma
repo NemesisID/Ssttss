@@ -30,6 +30,7 @@ enum PaymentStatus {
   PENDING
   UPLOADED
   PAID
+  DONE
   REJECTED
 }
 

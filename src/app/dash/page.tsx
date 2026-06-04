@@ -70,54 +70,30 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Division Stats + Payment Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Per Division */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
-          <h2 className="text-base font-semibold text-white mb-4">Per Divisi</h2>
-          <div className="space-y-3">
-            {Object.entries(stats.divisions).map(([div, count]) => {
-              const percentage = stats.total > 0 ? (count / stats.total) * 100 : 0;
-              return (
-                <div key={div}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-slate-300 text-sm">{DIVISION_LABELS[div] || div}</span>
-                    <span className="text-white font-semibold text-sm">{count}</span>
-                  </div>
-                  <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
+      {/* Division Stats */}
+      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
+        <h2 className="text-base font-semibold text-white mb-4">Per Divisi</h2>
+        <div className="space-y-3">
+          {Object.entries(stats.divisions).map(([div, count]) => {
+            const percentage = stats.total > 0 ? (count / stats.total) * 100 : 0;
+            return (
+              <div key={div}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-slate-300 text-sm">{DIVISION_LABELS[div] || div}</span>
+                  <span className="text-white font-semibold text-sm">{count}</span>
                 </div>
-              );
-            })}
-            {Object.keys(stats.divisions).length === 0 && (
-              <p className="text-slate-500 text-sm">Belum ada data</p>
-            )}
-          </div>
-        </div>
-
-        {/* Payment Status */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6">
-          <h2 className="text-base font-semibold text-white mb-4">Status Pembayaran</h2>
-          <div className="space-y-3">
-            {[
-              { label: "Menunggu Upload", value: stats.pending, color: "bg-yellow-400" },
-              { label: "Sudah Upload", value: stats.uploaded, color: "bg-orange-400" },
-              { label: "Terverifikasi", value: stats.verified, color: "bg-emerald-400" },
-              { label: "Ditolak", value: stats.rejected, color: "bg-red-400" },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0">
-                <div className="flex items-center gap-2.5">
-                  <div className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
-                  <span className="text-slate-300 text-sm">{item.label}</span>
+                <div className="h-2 bg-white/[0.05] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500"
+                    style={{ width: `${percentage}%` }}
+                  />
                 </div>
-                <span className="text-white font-semibold">{item.value}</span>
               </div>
-            ))}
-          </div>
+            );
+          })}
+          {Object.keys(stats.divisions).length === 0 && (
+            <p className="text-slate-500 text-sm">Belum ada data</p>
+          )}
         </div>
       </div>
     </div>
