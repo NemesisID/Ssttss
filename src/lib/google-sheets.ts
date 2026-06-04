@@ -46,7 +46,7 @@ export async function appendToSheet(data: {
     data.divisions.join(", "),
     data.plan,
     data.paymentStatus,
-    data.paymentProofUrl || "-",
+    data.paymentProofUrl ? `https://iscom.isslab.web.id${data.paymentProofUrl}` : "-",
   ];
 
   await sheets.spreadsheets.values.append({
@@ -126,7 +126,7 @@ export async function syncAllToSheet(registrations: {
     r.divisions.map((d) => d.division.replace(/_/g, " ")).join(", "),
     r.plan,
     r.paymentStatus,
-    r.paymentProofUrl || "-",
+    r.paymentProofUrl ? `https://iscom.isslab.web.id${r.paymentProofUrl}` : "-",
   ]);
 
   // Clear the entire sheet first
