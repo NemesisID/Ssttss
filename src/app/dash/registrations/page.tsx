@@ -43,6 +43,8 @@ export default function RegistrationsPage() {
   const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 20, total: 0, totalPages: 0 });
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [prodiFilter, setProdiFilter] = useState("");
+  const [sortFilter, setSortFilter] = useState("date_desc");
   const [loading, setLoading] = useState(true);
   const [confirm, setConfirm] = useState<ConfirmDialog | null>(null);
   const [editModal, setEditModal] = useState<EditModal | null>(null);
@@ -54,6 +56,8 @@ export default function RegistrationsPage() {
     const params = new URLSearchParams({ page: page.toString(), limit: "20" });
     if (search) params.set("search", search);
     if (statusFilter) params.set("status", statusFilter);
+    if (prodiFilter) params.set("prodi", prodiFilter);
+    if (sortFilter) params.set("sort", sortFilter);
 
     const res = await fetch(`/api/admin/registrations?${params}`);
     const json = await res.json();
@@ -64,7 +68,7 @@ export default function RegistrationsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [statusFilter]);
+  }, [statusFilter, prodiFilter, sortFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,16 +118,6 @@ export default function RegistrationsPage() {
     setTimeout(() => setSyncMsg(""), 5000);
   };
 
-  const statusBadge = (status: string) => {
-    const map: Record<string, string> = {
-      PENDING: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-      UPLOADED: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-      PAID: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-      DONE: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-      REJECTED: "bg-red-500/10 text-red-400 border-red-500/20",
-    };
-    return map[status] || "bg-slate-500/10 text-slate-400 border-slate-500/20";
-  };
 
   return (
     <div>
@@ -299,8 +293,9 @@ export default function RegistrationsPage() {
       )}
 
       {/* Filters */}
-      <div className="flex gap-3 mb-5">
-        <form onSubmit={handleSearch} className="flex-1">
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 mb-5">
+        <form onSubmit={handleSearch} className="flex-1 min-w-[200px]">
           <div className="relative">
             <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -314,6 +309,27 @@ export default function RegistrationsPage() {
             />
           </div>
         </form>
+        <select
+          value={prodiFilter}
+          onChange={(e) => setProdiFilter(e.target.value)}
+          className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none hover:border-white/[0.15] transition-all"
+        >
+          <option value="">Semua Prodi</option>
+          <option value="INFORMATIKA">Informatika</option>
+          <option value="SISTEM_INFORMASI">Sistem Informasi</option>
+          <option value="SAINS_DATA">Sains Data</option>
+          <option value="BISNIS_DIGITAL">Bisnis Digital</option>
+        </select>
+        <select
+          value={sortFilter}
+          onChange={(e) => setSortFilter(e.target.value)}
+          className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none hover:border-white/[0.15] transition-all"
+        >
+          <option value="date_desc">Terbaru</option>
+          <option value="date_asc">Terlama</option>
+          <option value="name_asc">Nama (A-Z)</option>
+          <option value="name_desc">Nama (Z-A)</option>
+        </select>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -334,9 +350,9 @@ export default function RegistrationsPage() {
             <tr className="border-b border-white/[0.06]">
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Nama</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">NPM</th>
+              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Prodi</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Divisi</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Plan</th>
-              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Status</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
@@ -355,6 +371,9 @@ export default function RegistrationsPage() {
                     <p className="text-slate-500 text-xs mt-0.5">{r.email}</p>
                   </td>
                   <td className="p-4 text-slate-300 font-mono text-xs">{r.npm}</td>
+                  <td className="p-4 text-slate-300 text-xs">
+                    {r.prodi?.replace("_", " ")}
+                  </td>
                   <td className="p-4">
                     <div className="flex flex-wrap gap-1">
                       {r.divisions.map((d) => (
@@ -367,11 +386,6 @@ export default function RegistrationsPage() {
                   <td className="p-4">
                     <span className={`text-xs font-medium ${r.plan === "PAID" ? "text-purple-400" : "text-slate-400"}`}>
                       {r.plan}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${statusBadge(r.paymentStatus)}`}>
-                      {r.paymentStatus}
                     </span>
                   </td>
                   <td className="p-4">

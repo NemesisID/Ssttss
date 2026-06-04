@@ -9,6 +9,7 @@ type WaGroup = {
 
 type Props = {
   registrationId: string;
+  isExistingUser?: boolean;
 };
 
 const DIVISION_LABELS: Record<string, string> = {
@@ -25,7 +26,7 @@ const DIVISION_ICONS: Record<string, string> = {
   UI_UX: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01",
 };
 
-export default function SuccessStep({ registrationId }: Props) {
+export default function SuccessStep({ registrationId, isExistingUser }: Props) {
   const [groups, setGroups] = useState<WaGroup[]>([]);
 
   useEffect(() => {
@@ -49,11 +50,23 @@ export default function SuccessStep({ registrationId }: Props) {
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-xl font-bold text-white">Pendaftaran Berhasil!</h2>
+        <h2 className="text-xl font-bold text-white">
+          {isExistingUser ? "Kamu Sudah Terdaftar!" : "Pendaftaran Berhasil!"}
+        </h2>
         <p className="text-slate-300 text-sm leading-relaxed max-w-md mx-auto">
-          Terima kasih banyak telah mendaftar sebagai member resmi <strong>ISCOM 2026</strong>! 
-          Silakan bergabung ke grup WhatsApp divisi Kamu melalui tombol di bawah untuk koordinasi dan informasi lebih lanjut. 
-          Pastikan juga Kamu mengikuti Instagram kami di{" "}
+          {isExistingUser ? (
+            <>
+              NPM kamu terdeteksi sudah terdaftar sebelumnya. 
+              Berikut adalah link grup WhatsApp divisi kamu. Silakan bergabung jika belum untuk koordinasi lebih lanjut! 
+              Pastikan juga Kamu mengikuti Instagram kami di{" "}
+            </>
+          ) : (
+            <>
+              Terima kasih banyak telah mendaftar sebagai member resmi <strong>ISCOM 2026</strong>! 
+              Silakan bergabung ke grup WhatsApp divisi Kamu melalui tombol di bawah untuk koordinasi dan informasi lebih lanjut. 
+              Pastikan juga Kamu mengikuti Instagram kami di{" "}
+            </>
+          )}
           <a
             href="https://www.instagram.com/iscom_upnjatim"
             target="_blank"

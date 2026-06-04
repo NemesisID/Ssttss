@@ -31,6 +31,7 @@ export default function RegisterPage() {
     plan: "",
   });
   const [registrationId, setRegistrationId] = useState<string | null>(null);
+  const [isExistingUser, setIsExistingUser] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -97,11 +98,11 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {step === 1 && <PersonalInfoStep data={formData} onChange={updateForm} onNext={() => setStep(2)} onAlreadyRegistered={(id) => { setRegistrationId(id); setStep(5); }} />}
+          {step === 1 && <PersonalInfoStep data={formData} onChange={updateForm} onNext={() => setStep(2)} onAlreadyRegistered={(id) => { setRegistrationId(id); setIsExistingUser(true); setStep(5); }} />}
           {step === 2 && <DivisionStep data={formData} onChange={updateForm} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
           {step === 3 && <PlanStep data={formData} onChange={updateForm} onNext={handlePlanNext} onBack={() => setStep(2)} loading={loading} />}
           {step === 4 && <PaymentStep onSuccess={(filePath) => handleSubmit({ paymentProofUrl: filePath })} />}
-          {step === 5 && registrationId && <SuccessStep registrationId={registrationId} />}
+          {step === 5 && registrationId && <SuccessStep registrationId={registrationId} isExistingUser={isExistingUser} />}
         </div>
 
         <p className="mt-5 text-slate-600 text-xs text-center">&copy; 2026 ISCOM UPN Veteran Jawa Timur</p>
