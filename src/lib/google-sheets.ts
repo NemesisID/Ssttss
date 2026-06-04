@@ -18,7 +18,6 @@ export async function appendToSheet(data: {
   noWhatsapp: string;
   divisions: string[];
   plan: string;
-  paymentStatus: string;
   paymentProofUrl?: string | null;
 }) {
   const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
@@ -45,7 +44,6 @@ export async function appendToSheet(data: {
     `'${data.noWhatsapp}`, // Tambahkan kutip agar 0 di awal tidak hilang
     data.divisions.join(", "),
     data.plan,
-    data.paymentStatus,
     data.paymentProofUrl ? `https://iscom.isslab.web.id${data.paymentProofUrl}` : "-",
   ];
 
@@ -57,31 +55,6 @@ export async function appendToSheet(data: {
   });
 }
 
-export async function updateSheetPaymentStatus(npm: string, status: string) {
-  const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
-  if (!spreadsheetId) return;
-
-  const auth = getAuth();
-  const sheets = google.sheets({ version: "v4", auth });
-
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range: "Sheet1!C:C",
-  });
-
-  const rows = response.data.values;
-  if (!rows) return;
-
-  const rowIndex = rows.findIndex((row) => row[0] === npm);
-  if (rowIndex === -1) return;
-
-  await sheets.spreadsheets.values.update({
-    spreadsheetId,
-    range: `Sheet1!I${rowIndex + 1}`,
-    valueInputOption: "USER_ENTERED",
-    requestBody: { values: [[status]] },
-  });
-}
 
 export async function syncAllToSheet(registrations: {
   createdAt: Date;
@@ -92,7 +65,6 @@ export async function syncAllToSheet(registrations: {
   noWhatsapp: string;
   divisions: { division: string }[];
   plan: string;
-  paymentStatus: string;
   paymentProofUrl?: string | null;
 }[]) {
   const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
@@ -104,7 +76,7 @@ export async function syncAllToSheet(registrations: {
   // Header row (same columns as detail page)
   const header = [
     "Timestamp", "Nama", "NPM", "Program Studi", "Email",
-    "No WhatsApp", "Divisi", "Plan", "Status", "Bukti Pembayaran",
+    "No WhatsApp", "Divisi", "Plan", "Bukti Pembayaran",
   ];
 
   const rows = registrations.map((r) => [
@@ -125,7 +97,6 @@ export async function syncAllToSheet(registrations: {
     `'${r.noWhatsapp}`,
     r.divisions.map((d) => d.division.replace(/_/g, " ")).join(", "),
     r.plan,
-    r.paymentStatus,
     r.paymentProofUrl ? `https://iscom.isslab.web.id${r.paymentProofUrl}` : "-",
   ]);
 

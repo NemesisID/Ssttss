@@ -67,7 +67,6 @@ export async function POST(req: NextRequest) {
     noWhatsapp,
     divisions,
     plan,
-    paymentStatus: "DONE",
     paymentProofUrl: isPaid ? paymentProofUrl : null,
   }).catch(() => {});
 

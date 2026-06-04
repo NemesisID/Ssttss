@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { updateSheetPaymentStatus } from "@/lib/google-sheets";
+
 
 export async function POST(
   req: NextRequest,
@@ -38,7 +38,7 @@ export async function POST(
         rejectionReason: null,
       },
     });
-    updateSheetPaymentStatus(registration.npm, "PAID").catch(() => {});
+
   } else {
     if (!reason) {
       return NextResponse.json({ error: "Alasan reject wajib diisi" }, { status: 400 });
@@ -50,7 +50,6 @@ export async function POST(
         rejectionReason: reason,
       },
     });
-    updateSheetPaymentStatus(registration.npm, "REJECTED").catch(() => {});
   }
 
   return NextResponse.json({ success: true, action });
