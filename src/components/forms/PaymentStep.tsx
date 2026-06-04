@@ -37,13 +37,25 @@ export default function PaymentStep({ onSuccess }: Props) {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/api/payment/upload", { method: "POST", body: formData });
-    const json = await res.json();
+    try {
+      const res = await fetch("/api/payment/upload", { method: "POST", body: formData });
+      
+      let json;
+      try {
+        json = await res.json();
+      } catch (err) {
+        setError(`Terjadi kesalahan di server. Status HTTP: ${res.status}`);
+        setUploading(false);
+        return;
+      }
 
-    if (res.ok && json.filePath) {
-      onSuccess(json.filePath);
-    } else {
-      setError(json.error || "Gagal upload bukti bayar");
+      if (res.ok && json.filePath) {
+        onSuccess(json.filePath);
+      } else {
+        setError(json.error || "Gagal upload bukti bayar");
+      }
+    } catch (error) {
+      setError("Gagal terhubung ke server. Periksa koneksi internet Anda.");
     }
     setUploading(false);
   };

@@ -4,7 +4,7 @@ import fs from "fs/promises";
 import crypto from "crypto";
 import jsqr from "jsqr";
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || "./uploads/payment-proofs";
+const UPLOAD_DIR = process.env.UPLOAD_DIR || "./public/uploads/payment-proofs";
 const MAX_FILE_SIZE = (parseInt(process.env.MAX_FILE_SIZE_MB || "5") || 5) * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
@@ -58,7 +58,7 @@ export async function deletePaymentProof(filePath: string): Promise<void> {
   }
 }
 
-const QRIS_UPLOAD_DIR = process.env.QRIS_UPLOAD_DIR || "./uploads/qris";
+const QRIS_UPLOAD_DIR = process.env.QRIS_UPLOAD_DIR || "./public/uploads/qris";
 
 interface QrisUploadResult {
   success: boolean;
