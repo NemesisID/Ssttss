@@ -55,8 +55,6 @@ export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegi
           // NPM sudah terdaftar → langsung ke halaman sukses
           onAlreadyRegistered(result.registrationId);
           return;
-        } else {
-          setErrors({ email: "Email sudah terdaftar" });
         }
         setChecking(false);
         return;

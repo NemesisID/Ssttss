@@ -33,8 +33,7 @@ export async function POST(req: NextRequest) {
     where: { OR: [{ npm }, { email }] },
   });
   if (existing) {
-    const field = existing.npm === npm ? "NPM" : "Email";
-    return NextResponse.json({ error: `${field} sudah terdaftar.` }, { status: 409 });
+    return NextResponse.json({ error: `NPM sudah terdaftar.` }, { status: 409 });
   }
 
   const isPaid = plan === "PAID";

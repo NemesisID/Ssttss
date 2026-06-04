@@ -349,7 +349,7 @@ export default function RegistrationsPage() {
           <thead>
             <tr className="border-b border-white/[0.06]">
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Nama</th>
-              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">NPM</th>
+              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Nomor HP</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Prodi</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Divisi</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Plan</th>
@@ -370,7 +370,7 @@ export default function RegistrationsPage() {
                     <p className="text-white font-medium">{r.nama}</p>
                     <p className="text-slate-500 text-xs mt-0.5">{r.email}</p>
                   </td>
-                  <td className="p-4 text-slate-300 font-mono text-xs">{r.npm}</td>
+                  <td className="p-4 text-slate-300 font-mono text-xs">{r.noWhatsapp}</td>
                   <td className="p-4 text-slate-300 text-xs">
                     {r.prodi?.replace("_", " ")}
                   </td>
@@ -385,7 +385,7 @@ export default function RegistrationsPage() {
                   </td>
                   <td className="p-4">
                     <span className={`text-xs font-medium ${r.plan === "PAID" ? "text-purple-400" : "text-slate-400"}`}>
-                      {r.plan}
+                      {r.plan === "PAID" ? "Berbayar" : r.plan === "FREE" ? "Gratis" : r.plan}
                     </span>
                   </td>
                   <td className="p-4">
