@@ -293,9 +293,8 @@ export default function RegistrationsPage() {
       )}
 
       {/* Filters */}
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-5">
-        <form onSubmit={handleSearch} className="flex-1 min-w-[200px]">
+      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 mb-6 flex flex-col lg:flex-row gap-4">
+        <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
             <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -305,31 +304,48 @@ export default function RegistrationsPage() {
               placeholder="Cari nama, NPM, email, atau no. HP..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all hover:border-white/[0.15]"
+              className="w-full pl-10 pr-4 py-2.5 bg-[#131825] border border-white/[0.08] rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all hover:border-white/[0.15]"
             />
           </div>
         </form>
-        <select
-          value={prodiFilter}
-          onChange={(e) => setProdiFilter(e.target.value)}
-          className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none hover:border-white/[0.15] transition-all"
-        >
-          <option value="">Semua Prodi</option>
-          <option value="INFORMATIKA">Informatika</option>
-          <option value="SISTEM_INFORMASI">Sistem Informasi</option>
-          <option value="SAINS_DATA">Sains Data</option>
-          <option value="BISNIS_DIGITAL">Bisnis Digital</option>
-        </select>
-        <select
-          value={sortFilter}
-          onChange={(e) => setSortFilter(e.target.value)}
-          className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none hover:border-white/[0.15] transition-all"
-        >
-          <option value="date_desc">Terbaru</option>
-          <option value="date_asc">Terlama</option>
-          <option value="name_asc">Nama (A-Z)</option>
-          <option value="name_desc">Nama (Z-A)</option>
-        </select>
+        <div className="flex flex-wrap sm:flex-nowrap gap-3">
+          <div className="relative w-full sm:w-auto min-w-[160px]">
+            <select
+              value={prodiFilter}
+              onChange={(e) => setProdiFilter(e.target.value)}
+              className="w-full appearance-none pl-4 pr-10 py-2.5 bg-[#131825] border border-white/[0.08] rounded-xl text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 hover:border-white/[0.15] transition-all cursor-pointer"
+            >
+              <option value="" className="bg-[#131825]">Semua Prodi</option>
+              <option value="INFORMATIKA" className="bg-[#131825]">Informatika</option>
+              <option value="SISTEM_INFORMASI" className="bg-[#131825]">Sistem Informasi</option>
+              <option value="SAINS_DATA" className="bg-[#131825]">Sains Data</option>
+              <option value="BISNIS_DIGITAL" className="bg-[#131825]">Bisnis Digital</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          
+          <div className="relative w-full sm:w-auto min-w-[160px]">
+            <select
+              value={sortFilter}
+              onChange={(e) => setSortFilter(e.target.value)}
+              className="w-full appearance-none pl-4 pr-10 py-2.5 bg-[#131825] border border-white/[0.08] rounded-xl text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 hover:border-white/[0.15] transition-all cursor-pointer"
+            >
+              <option value="date_desc" className="bg-[#131825]">Urutkan: Terbaru</option>
+              <option value="date_asc" className="bg-[#131825]">Urutkan: Terlama</option>
+              <option value="name_asc" className="bg-[#131825]">Nama (A-Z)</option>
+              <option value="name_desc" className="bg-[#131825]">Nama (Z-A)</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Table */}
