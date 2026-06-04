@@ -57,7 +57,7 @@ export default function SuccessStep({ registrationId, isExistingUser }: Props) {
           {isExistingUser ? (
             <>
               NPM kamu terdeteksi sudah terdaftar sebelumnya. 
-              Berikut adalah link grup WhatsApp divisi kamu. Silakan bergabung jika belum untuk koordinasi lebih lanjut! 
+              Berikut adalah link grup WhatsApp divisi kamu. Silakan bergabung jika belum, untuk koordinasi lebih lanjut! 
               Pastikan juga Kamu mengikuti Instagram kami di{" "}
             </>
           ) : (
