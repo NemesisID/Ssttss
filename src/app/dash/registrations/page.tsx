@@ -330,17 +330,6 @@ export default function RegistrationsPage() {
           <option value="name_asc">Nama (A-Z)</option>
           <option value="name_desc">Nama (Z-A)</option>
         </select>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none hover:border-white/[0.15] transition-all"
-        >
-          <option value="">Semua Status</option>
-          <option value="PENDING">Pending</option>
-          <option value="UPLOADED">Uploaded</option>
-          <option value="DONE">Done</option>
-          <option value="REJECTED">Rejected</option>
-        </select>
       </div>
 
       {/* Table */}
