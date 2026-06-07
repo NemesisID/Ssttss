@@ -23,6 +23,7 @@ export async function PUT(req: NextRequest) {
   const allowedKeys = [
     "paid_plan_price",
     "registration_open",
+    "registration_closed_title",
     "registration_closed_message",
   ];
 
