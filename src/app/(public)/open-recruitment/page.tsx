@@ -76,9 +76,10 @@ export default async function RegisterPage() {
 
             {/* Message Box */}
             <div className="bg-slate-800/60 rounded-2xl p-5 border border-slate-700/60 flex gap-4 items-start mb-8">
-              <p className="text-slate-300 text-sm text-center leading-relaxed">
-                {displayMessage}
-              </p>
+              <p 
+                className="text-slate-300 text-sm text-center leading-relaxed" 
+                dangerouslySetInnerHTML={{ __html: displayMessage.replace(/\n/g, '<br />') }} 
+              />
             </div>
           </div>
           
