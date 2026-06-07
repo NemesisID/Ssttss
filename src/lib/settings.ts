@@ -21,6 +21,7 @@ export async function getSettings(): Promise<Record<string, string>> {
 export const SETTING_KEYS = {
   PAID_PLAN_PRICE: "paid_plan_price",
   REGISTRATION_OPEN: "registration_open",
+  REGISTRATION_CLOSED_MESSAGE: "registration_closed_message",
   /** Path ke file gambar QRIS yang diupload admin (disimpan di uploads/qris/) */
   QRIS_IMAGE_PATH: "qris_image_path",
   /** String QRIS statis — digunakan internal untuk generate dynamic QR, tidak ditampilkan di UI admin */

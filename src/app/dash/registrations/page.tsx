@@ -44,6 +44,7 @@ export default function RegistrationsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [prodiFilter, setProdiFilter] = useState("");
+  const [planFilter, setPlanFilter] = useState("");
   const [sortFilter, setSortFilter] = useState("date_desc");
   const [loading, setLoading] = useState(true);
   const [confirm, setConfirm] = useState<ConfirmDialog | null>(null);
@@ -57,6 +58,7 @@ export default function RegistrationsPage() {
     if (search) params.set("search", search);
     if (statusFilter) params.set("status", statusFilter);
     if (prodiFilter) params.set("prodi", prodiFilter);
+    if (planFilter) params.set("plan", planFilter);
     if (sortFilter) params.set("sort", sortFilter);
 
     const res = await fetch(`/api/admin/registrations?${params}`);
@@ -68,7 +70,7 @@ export default function RegistrationsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [statusFilter, prodiFilter, sortFilter]);
+  }, [statusFilter, prodiFilter, planFilter, sortFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -320,6 +322,23 @@ export default function RegistrationsPage() {
               <option value="SISTEM_INFORMASI" className="bg-[#131825]">Sistem Informasi</option>
               <option value="SAINS_DATA" className="bg-[#131825]">Sains Data</option>
               <option value="BISNIS_DIGITAL" className="bg-[#131825]">Bisnis Digital</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          
+          <div className="relative w-full sm:w-auto min-w-[140px]">
+            <select
+              value={planFilter}
+              onChange={(e) => setPlanFilter(e.target.value)}
+              className="w-full appearance-none pl-4 pr-10 py-2.5 bg-[#131825] border border-white/[0.08] rounded-xl text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 hover:border-white/[0.15] transition-all cursor-pointer"
+            >
+              <option value="" className="bg-[#131825]">Semua Plan</option>
+              <option value="FREE" className="bg-[#131825]">Gratis</option>
+              <option value="PAID" className="bg-[#131825]">Berbayar</option>
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

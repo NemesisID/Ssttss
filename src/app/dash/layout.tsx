@@ -34,9 +34,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (status === "unauthenticated") return null;
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] flex">
+    <div className="h-screen bg-[#0a0e1a] flex overflow-hidden">
       <Sidebar />
-      <main className="flex-1 p-8 overflow-auto">
+      <main className="flex-1 p-8 overflow-y-auto">
         {children}
       </main>
     </div>

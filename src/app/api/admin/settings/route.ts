@@ -23,6 +23,7 @@ export async function PUT(req: NextRequest) {
   const allowedKeys = [
     "paid_plan_price",
     "registration_open",
+    "registration_closed_message",
   ];
 
   for (const [key, value] of Object.entries(body)) {
