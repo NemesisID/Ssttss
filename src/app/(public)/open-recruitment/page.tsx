@@ -8,11 +8,13 @@ export const dynamic = "force-dynamic";
 export type { FormData } from "./RegisterClient";
 
 export default async function RegisterPage() {
-  const [regOpen, closedMessage] = await Promise.all([
+  const [regOpen, closedTitle, closedMessage] = await Promise.all([
     getSetting(SETTING_KEYS.REGISTRATION_OPEN),
+    getSetting(SETTING_KEYS.REGISTRATION_CLOSED_TITLE),
     getSetting(SETTING_KEYS.REGISTRATION_CLOSED_MESSAGE),
   ]);
   
+  const displayTitle = closedTitle || "Pendaftaran Ditutup";
   const displayMessage = closedMessage || "Mohon maaf, pendaftaran Open Recruitment ISCOM 2026 saat ini sedang ditutup atau belum dibuka.";
   
   if (regOpen === "false") {
@@ -68,7 +70,7 @@ export default async function RegisterPage() {
             </div>
 
             <div className="text-center mb-8">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Pendaftaran Ditutup</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{displayTitle}</h1>
               <p className="text-slate-400 text-sm font-medium">Open Recruitment ISCOM 2026</p>
             </div>
 

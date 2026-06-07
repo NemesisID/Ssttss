@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 type Settings = {
   paid_plan_price?: string;
   registration_open?: string;
+  registration_closed_title?: string;
   registration_closed_message?: string;
 };
 
@@ -32,6 +33,7 @@ export default function SettingsPage() {
       setSettings({
         paid_plan_price: settingsData.paid_plan_price,
         registration_open: settingsData.registration_open,
+        registration_closed_title: settingsData.registration_closed_title || "Pendaftaran Ditutup",
         registration_closed_message: settingsData.registration_closed_message || "Mohon maaf, pendaftaran Open Recruitment ISCOM 2026 saat ini sedang ditutup atau belum dibuka.",
       });
       if (qrisData.imagePath) {
@@ -207,6 +209,17 @@ export default function SettingsPage() {
                 settings.registration_open === "true" ? "translate-x-7" : "translate-x-1"
               }`} />
             </button>
+          </div>
+
+          <div>
+            <label className="text-slate-400 text-xs font-medium mb-1.5 block">Judul Saat Pendaftaran Ditutup</label>
+            <input
+              type="text"
+              value={settings.registration_closed_title || ""}
+              onChange={(e) => setSettings({ ...settings, registration_closed_title: e.target.value })}
+              placeholder="Pendaftaran Ditutup"
+              className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 hover:border-white/[0.15] transition-all mb-4"
+            />
           </div>
 
           <div>
