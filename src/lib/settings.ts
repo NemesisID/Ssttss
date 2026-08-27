@@ -27,4 +27,11 @@ export const SETTING_KEYS = {
   QRIS_IMAGE_PATH: "qris_image_path",
   /** String QRIS statis — digunakan internal untuk generate dynamic QR, tidak ditampilkan di UI admin */
   QRIS_STRING: "qris_string",
+  /** Merchandise settings */
+  MERCH_IMAGE_PATH: "merch_image_path",
+  MERCH_TITLE: "merch_title",
+  MERCH_DESCRIPTION: "merch_description",
+  MERCH_OPTIONS: "merch_options",
+  MERCH_OPEN: "merch_open",
+  MERCH_PRICE: "merch_price",
 } as const;
