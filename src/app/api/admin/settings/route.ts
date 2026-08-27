@@ -23,10 +23,16 @@ export async function PUT(req: NextRequest) {
   const allowedKeys = [
     "paid_plan_price",
     "registration_open",
+    "registration_closed_title",
+    "registration_closed_message",
   ];
 
   for (const [key, value] of Object.entries(body)) {
-    if (!allowedKeys.includes(key)) continue;
+    if (!allowedKeys.includes(key)) {
+      console.log("Key not allowed:", key);
+      continue;
+    }
+    console.log("Saving key:", key, value);
     await setSetting(key, value as string);
   }
 

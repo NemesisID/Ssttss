@@ -16,6 +16,8 @@ export async function GET(req: NextRequest) {
   const status = url.searchParams.get("status") || "";
   const division = url.searchParams.get("division") || "";
   const plan = url.searchParams.get("plan") || "";
+  const prodi = url.searchParams.get("prodi") || "";
+  const sort = url.searchParams.get("sort") || "date_desc";
 
   const where: Record<string, unknown> = {};
 
@@ -32,12 +34,18 @@ export async function GET(req: NextRequest) {
   if (division) {
     where.divisions = { some: { division } };
   }
+  if (prodi) where.prodi = prodi;
+
+  let orderBy: any = { createdAt: "desc" };
+  if (sort === "date_asc") orderBy = { createdAt: "asc" };
+  else if (sort === "name_asc") orderBy = { nama: "asc" };
+  else if (sort === "name_desc") orderBy = { nama: "desc" };
 
   const [registrations, total] = await Promise.all([
     prisma.registration.findMany({
       where,
       include: { divisions: true },
-      orderBy: { createdAt: "desc" },
+      orderBy,
       skip: (page - 1) * limit,
       take: limit,
     }),

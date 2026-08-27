@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 type Settings = {
   paid_plan_price?: string;
   registration_open?: string;
+  registration_closed_title?: string;
+  registration_closed_message?: string;
 };
 
 export default function SettingsPage() {
@@ -21,6 +23,8 @@ export default function SettingsPage() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [activeTab, setActiveTab] = useState<"pendaftaran" | "pembayaran">("pendaftaran");
+
   useEffect(() => {
     Promise.all([
       fetch("/api/admin/settings", { cache: "no-store" }).then((r) => r.json()),
@@ -29,6 +33,8 @@ export default function SettingsPage() {
       setSettings({
         paid_plan_price: settingsData.paid_plan_price,
         registration_open: settingsData.registration_open,
+        registration_closed_title: settingsData.registration_closed_title || "Pendaftaran Ditutup",
+        registration_closed_message: settingsData.registration_closed_message || "Mohon maaf, pendaftaran Open Recruitment ISCOM 2026 saat ini sedang ditutup atau belum dibuka.",
       });
       if (qrisData.imagePath) {
         setQrisImageUrl(
@@ -152,17 +158,41 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* Tabs */}
+      <div className="flex items-center gap-2 mb-6 border-b border-white/[0.06] pb-4">
+        <button
+          onClick={() => setActiveTab("pendaftaran")}
+          className={`px-4 py-2 text-sm font-medium rounded-xl transition-all ${
+            activeTab === "pendaftaran"
+              ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+              : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+          }`}
+        >
+          Pendaftaran
+        </button>
+        <button
+          onClick={() => setActiveTab("pembayaran")}
+          className={`px-4 py-2 text-sm font-medium rounded-xl transition-all ${
+            activeTab === "pembayaran"
+              ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
+              : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+          }`}
+        >
+          Pembayaran (Harga & QRIS)
+        </button>
+      </div>
+
       <div className="space-y-5">
-        {/* Registration Settings */}
-        <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 space-y-5">
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
+        {activeTab === "pendaftaran" && (
+          <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 space-y-5">
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <h2 className="text-base font-semibold text-white">Pengaturan Pendaftaran</h2>
             </div>
-            <h2 className="text-base font-semibold text-white">Pendaftaran</h2>
-          </div>
 
           <div className="flex items-center justify-between p-4 bg-white/[0.02] rounded-xl border border-white/[0.04]">
             <div>
@@ -182,16 +212,52 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="text-slate-400 text-xs font-medium mb-1.5 block">Harga Plan Berbayar (Rp)</label>
+            <label className="text-slate-400 text-xs font-medium mb-1.5 block">Judul Saat Pendaftaran Ditutup</label>
             <input
-              type="number"
-              value={settings.paid_plan_price || ""}
-              onChange={(e) => setSettings({ ...settings, paid_plan_price: e.target.value })}
-              onWheel={(e) => (e.target as HTMLInputElement).blur()}
-              className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 hover:border-white/[0.15] transition-all"
+              type="text"
+              value={settings.registration_closed_title || ""}
+              onChange={(e) => setSettings({ ...settings, registration_closed_title: e.target.value })}
+              placeholder="Pendaftaran Ditutup"
+              className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 hover:border-white/[0.15] transition-all mb-4"
             />
           </div>
-        </div>
+
+          <div>
+            <label className="text-slate-400 text-xs font-medium mb-1.5 block">Pesan Saat Pendaftaran Ditutup</label>
+            <textarea
+              value={settings.registration_closed_message || ""}
+              onChange={(e) => setSettings({ ...settings, registration_closed_message: e.target.value })}
+              placeholder="Mohon maaf, pendaftaran sedang ditutup."
+              rows={3}
+              className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 hover:border-white/[0.15] transition-all resize-y"
+            />
+          </div>
+
+          </div>
+        )}
+
+        {activeTab === "pembayaran" && (
+          <>
+            <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 space-y-5">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-base font-semibold text-white">Harga Plan Berbayar</h2>
+              </div>
+              <div>
+                <label className="text-slate-400 text-xs font-medium mb-1.5 block">Harga (Rp)</label>
+                <input
+                  type="number"
+                  value={settings.paid_plan_price || ""}
+                  onChange={(e) => setSettings({ ...settings, paid_plan_price: e.target.value })}
+                  onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                  className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 hover:border-white/[0.15] transition-all"
+                />
+              </div>
+            </div>
 
         {/* QRIS Settings */}
         <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 space-y-5">
@@ -332,6 +398,8 @@ export default function SettingsPage() {
             </div>
           )}
         </div>
+        </>
+        )}
 
         <button
           onClick={handleSave}

@@ -23,10 +23,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (existing) {
-      const field = existing.npm === npm ? "NPM" : "Email";
-      // Jika NPM sudah terdaftar, kembalikan registrationId agar bisa redirect ke halaman sukses
-      const registrationId = field === "NPM" ? existing.id : undefined;
-      return NextResponse.json({ exists: true, field, registrationId });
+      return NextResponse.json({ exists: true, field: "NPM", registrationId: existing.id });
     }
 
     return NextResponse.json({ exists: false });

@@ -44,6 +44,9 @@ export default function RegistrationsPage() {
   const [pagination, setPagination] = useState<Pagination>({ page: 1, limit: 20, total: 0, totalPages: 0 });
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [prodiFilter, setProdiFilter] = useState("");
+  const [planFilter, setPlanFilter] = useState("");
+  const [sortFilter, setSortFilter] = useState("date_desc");
   const [loading, setLoading] = useState(true);
   const [confirm, setConfirm] = useState<ConfirmDialog | null>(null);
   const [editModal, setEditModal] = useState<EditModal | null>(null);
@@ -55,6 +58,9 @@ export default function RegistrationsPage() {
     const params = new URLSearchParams({ page: page.toString(), limit: "20" });
     if (search) params.set("search", search);
     if (statusFilter) params.set("status", statusFilter);
+    if (prodiFilter) params.set("prodi", prodiFilter);
+    if (planFilter) params.set("plan", planFilter);
+    if (sortFilter) params.set("sort", sortFilter);
 
     const res = await fetch(`/api/admin/registrations?${params}`);
     const json = await res.json();
@@ -65,7 +71,7 @@ export default function RegistrationsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [statusFilter]);
+  }, [statusFilter, prodiFilter, planFilter, sortFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,16 +121,6 @@ export default function RegistrationsPage() {
     setTimeout(() => setSyncMsg(""), 5000);
   };
 
-  const statusBadge = (status: string) => {
-    const map: Record<string, string> = {
-      PENDING: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-      UPLOADED: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-      PAID: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-      DONE: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-      REJECTED: "bg-red-500/10 text-red-400 border-red-500/20",
-    };
-    return map[status] || "bg-slate-500/10 text-slate-400 border-slate-500/20";
-  };
 
   return (
     <div>
@@ -300,7 +296,7 @@ export default function RegistrationsPage() {
       )}
 
       {/* Filters */}
-      <div className="flex gap-3 mb-5">
+      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 mb-6 flex flex-col lg:flex-row gap-4">
         <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
             <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,21 +307,65 @@ export default function RegistrationsPage() {
               placeholder="Cari nama, NPM, email, atau no. HP..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all hover:border-white/[0.15]"
+              className="w-full pl-10 pr-4 py-2.5 bg-[#131825] border border-white/[0.08] rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all hover:border-white/[0.15]"
             />
           </div>
         </form>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none hover:border-white/[0.15] transition-all"
-        >
-          <option value="">Semua Status</option>
-          <option value="PENDING">Pending</option>
-          <option value="UPLOADED">Uploaded</option>
-          <option value="DONE">Done</option>
-          <option value="REJECTED">Rejected</option>
-        </select>
+        <div className="flex flex-wrap sm:flex-nowrap gap-3">
+          <div className="relative w-full sm:w-auto min-w-[160px]">
+            <select
+              value={prodiFilter}
+              onChange={(e) => setProdiFilter(e.target.value)}
+              className="w-full appearance-none pl-4 pr-10 py-2.5 bg-[#131825] border border-white/[0.08] rounded-xl text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 hover:border-white/[0.15] transition-all cursor-pointer"
+            >
+              <option value="" className="bg-[#131825]">Semua Prodi</option>
+              <option value="INFORMATIKA" className="bg-[#131825]">Informatika</option>
+              <option value="SISTEM_INFORMASI" className="bg-[#131825]">Sistem Informasi</option>
+              <option value="SAINS_DATA" className="bg-[#131825]">Sains Data</option>
+              <option value="BISNIS_DIGITAL" className="bg-[#131825]">Bisnis Digital</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          
+          <div className="relative w-full sm:w-auto min-w-[140px]">
+            <select
+              value={planFilter}
+              onChange={(e) => setPlanFilter(e.target.value)}
+              className="w-full appearance-none pl-4 pr-10 py-2.5 bg-[#131825] border border-white/[0.08] rounded-xl text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 hover:border-white/[0.15] transition-all cursor-pointer"
+            >
+              <option value="" className="bg-[#131825]">Semua Plan</option>
+              <option value="FREE" className="bg-[#131825]">Gratis</option>
+              <option value="PAID" className="bg-[#131825]">Berbayar</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          
+          <div className="relative w-full sm:w-auto min-w-[160px]">
+            <select
+              value={sortFilter}
+              onChange={(e) => setSortFilter(e.target.value)}
+              className="w-full appearance-none pl-4 pr-10 py-2.5 bg-[#131825] border border-white/[0.08] rounded-xl text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 hover:border-white/[0.15] transition-all cursor-pointer"
+            >
+              <option value="date_desc" className="bg-[#131825]">Urutkan: Terbaru</option>
+              <option value="date_asc" className="bg-[#131825]">Urutkan: Terlama</option>
+              <option value="name_asc" className="bg-[#131825]">Nama (A-Z)</option>
+              <option value="name_desc" className="bg-[#131825]">Nama (Z-A)</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Table */}
@@ -334,11 +374,10 @@ export default function RegistrationsPage() {
           <thead>
             <tr className="border-b border-white/[0.06]">
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Nama</th>
-              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">NPM</th>
+              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Nomor HP</th>
+              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Prodi</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Divisi</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Plan</th>
-              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Status</th>
-              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Merch</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
@@ -356,7 +395,10 @@ export default function RegistrationsPage() {
                     <p className="text-white font-medium">{r.nama}</p>
                     <p className="text-slate-500 text-xs mt-0.5">{r.email}</p>
                   </td>
-                  <td className="p-4 text-slate-300 font-mono text-xs">{r.npm}</td>
+                  <td className="p-4 text-slate-300 font-mono text-xs">{r.noWhatsapp}</td>
+                  <td className="p-4 text-slate-300 text-xs">
+                    {r.prodi?.replace("_", " ")}
+                  </td>
                   <td className="p-4">
                     <div className="flex flex-wrap gap-1">
                       {r.divisions.map((d) => (
@@ -368,22 +410,8 @@ export default function RegistrationsPage() {
                   </td>
                   <td className="p-4">
                     <span className={`text-xs font-medium ${r.plan === "PAID" ? "text-purple-400" : "text-slate-400"}`}>
-                      {r.plan}
+                      {r.plan === "PAID" ? "Berbayar" : r.plan === "FREE" ? "Gratis" : r.plan}
                     </span>
-                  </td>
-                  <td className="p-4">
-                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${statusBadge(r.paymentStatus)}`}>
-                      {r.paymentStatus}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    {r.merchChoice ? (
-                      <span className="px-2 py-0.5 bg-orange-500/10 border border-orange-500/20 rounded text-[10px] text-orange-400 font-medium">
-                        {r.merchChoice}
-                      </span>
-                    ) : (
-                      <span className="text-slate-600 text-[10px]">—</span>
-                    )}
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
