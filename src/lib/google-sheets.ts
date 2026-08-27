@@ -19,6 +19,7 @@ export async function appendToSheet(data: {
   divisions: string[];
   plan: string;
   paymentProofUrl?: string | null;
+  merchChoice?: string | null;
 }) {
   const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
   if (!spreadsheetId) return;
@@ -45,6 +46,7 @@ export async function appendToSheet(data: {
     data.divisions.join(", "),
     data.plan,
     data.paymentProofUrl ? `https://iscom.isslab.web.id${data.paymentProofUrl}` : "-",
+    data.merchChoice || "-",
   ];
 
   await sheets.spreadsheets.values.append({
@@ -66,6 +68,7 @@ export async function syncAllToSheet(registrations: {
   divisions: { division: string }[];
   plan: string;
   paymentProofUrl?: string | null;
+  merchChoice?: string | null;
 }[]) {
   const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
   if (!spreadsheetId) return;
@@ -76,7 +79,7 @@ export async function syncAllToSheet(registrations: {
   // Header row (same columns as detail page)
   const header = [
     "Timestamp", "Nama", "NPM", "Program Studi", "Email",
-    "No WhatsApp", "Divisi", "Plan", "Bukti Pembayaran",
+    "No WhatsApp", "Divisi", "Plan", "Bukti Pembayaran", "Merchandise",
   ];
 
   const rows = registrations.map((r) => [
@@ -98,6 +101,7 @@ export async function syncAllToSheet(registrations: {
     r.divisions.map((d) => d.division.replace(/_/g, " ")).join(", "),
     r.plan,
     r.paymentProofUrl ? `https://iscom.isslab.web.id${r.paymentProofUrl}` : "-",
+    r.merchChoice || "-",
   ]);
 
   // Clear the entire sheet first

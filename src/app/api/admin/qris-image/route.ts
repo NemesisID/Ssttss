@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { getSetting, setSetting, SETTING_KEYS } from "@/lib/settings";
 import { handleQrisImageUpload, deleteQrisImage } from "@/lib/upload";
 
+export const dynamic = "force-dynamic";
+
 /** GET: ambil info gambar QRIS yang aktif */
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -12,7 +14,11 @@ export async function GET() {
   }
 
   const imagePath = await getSetting(SETTING_KEYS.QRIS_IMAGE_PATH);
-  return NextResponse.json({ imagePath: imagePath || null });
+  return NextResponse.json({ imagePath: imagePath || null }, {
+    headers: {
+      "Cache-Control": "no-store, max-age=0, must-revalidate",
+    },
+  });
 }
 
 /** POST: upload gambar QRIS baru — sistem otomatis decode string QRIS dari gambar */

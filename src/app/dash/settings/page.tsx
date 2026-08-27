@@ -23,8 +23,8 @@ export default function SettingsPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/admin/settings").then((r) => r.json()),
-      fetch("/api/admin/qris-image").then((r) => r.json()),
+      fetch("/api/admin/settings", { cache: "no-store" }).then((r) => r.json()),
+      fetch("/api/admin/qris-image", { cache: "no-store" }).then((r) => r.json()),
     ]).then(([settingsData, qrisData]) => {
       setSettings({
         paid_plan_price: settingsData.paid_plan_price,

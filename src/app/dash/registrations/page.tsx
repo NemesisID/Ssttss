@@ -12,6 +12,7 @@ type Registration = {
   noWhatsapp: string;
   plan: string;
   paymentStatus: string;
+  merchChoice: string | null;
   createdAt: string;
   divisions: { division: string }[];
 };
@@ -337,16 +338,17 @@ export default function RegistrationsPage() {
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Divisi</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Plan</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Status</th>
+              <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Merch</th>
               <th className="text-left p-4 text-slate-500 font-medium text-xs uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} className="p-8 text-center">
+              <tr><td colSpan={7} className="p-8 text-center">
                 <div className="flex justify-center"><div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>
               </td></tr>
             ) : data.length === 0 ? (
-              <tr><td colSpan={6} className="p-8 text-center text-slate-500">Belum ada data pendaftar</td></tr>
+              <tr><td colSpan={7} className="p-8 text-center text-slate-500">Belum ada data pendaftar</td></tr>
             ) : (
               data.map((r) => (
                 <tr key={r.id} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
@@ -373,6 +375,15 @@ export default function RegistrationsPage() {
                     <span className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${statusBadge(r.paymentStatus)}`}>
                       {r.paymentStatus}
                     </span>
+                  </td>
+                  <td className="p-4">
+                    {r.merchChoice ? (
+                      <span className="px-2 py-0.5 bg-orange-500/10 border border-orange-500/20 rounded text-[10px] text-orange-400 font-medium">
+                        {r.merchChoice}
+                      </span>
+                    ) : (
+                      <span className="text-slate-600 text-[10px]">—</span>
+                    )}
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">

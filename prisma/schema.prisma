@@ -58,6 +58,8 @@ model Registration {
   paymentUploadedAt DateTime?
   paymentVerifiedAt DateTime?
   rejectionReason   String?              @db.VarChar(255)
+  merchChoice       String?              @db.VarChar(100)
+  merchSelectedAt   DateTime?
   divisions         RegistrationDivision[]
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt

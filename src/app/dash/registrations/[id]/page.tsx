@@ -17,6 +17,8 @@ type Registration = {
   paymentUploadedAt: string | null;
   paymentVerifiedAt: string | null;
   rejectionReason: string | null;
+  merchChoice: string | null;
+  merchSelectedAt: string | null;
   createdAt: string;
   divisions: { division: string }[];
 };
@@ -86,6 +88,8 @@ export default function RegistrationDetailPage() {
             { label: "Plan", value: data.plan },
             { label: "Provider", value: data.paymentProvider || "-" },
             { label: "Upload", value: data.paymentUploadedAt ? new Date(data.paymentUploadedAt).toLocaleString("id-ID") : "-" },
+            { label: "Merchandise", value: data.merchChoice || "Belum dipilih" },
+            { label: "Merch Dipilih", value: data.merchSelectedAt ? new Date(data.merchSelectedAt).toLocaleString("id-ID") : "-" },
           ].map((item) => (
             <div key={item.label}>
               <p className="text-slate-500 text-xs font-medium mb-1">{item.label}</p>

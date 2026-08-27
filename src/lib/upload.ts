@@ -120,14 +120,26 @@ export async function handleQrisImageUpload(file: File): Promise<QrisUploadResul
     return { success: false, error: "Gambar tidak mengandung QR Code QRIS yang valid. Pastikan menggunakan QRIS statis dari bank/e-wallet." };
   }
 
-  // Simpan sebagai qris.webp (replace file lama jika ada)
+  // Simpan sebagai qris-[timestamp].webp (replace file lama)
   const compressed = await sharp(buffer)
     .resize(800, 800, { fit: "inside", withoutEnlargement: true })
     .webp({ quality: 90 })
     .toBuffer();
 
+  // Hapus file qris lama jika ada
+  try {
+    const files = await fs.readdir(QRIS_UPLOAD_DIR);
+    for (const f of files) {
+      if (f.startsWith("qris")) {
+        await fs.unlink(path.join(QRIS_UPLOAD_DIR, f));
+      }
+    }
+  } catch {
+    // Folder belum ada, skip
+  }
+
   await fs.mkdir(QRIS_UPLOAD_DIR, { recursive: true });
-  const filename = "qris.webp";
+  const filename = `qris-${Date.now()}.webp`;
   const filePath = path.join(QRIS_UPLOAD_DIR, filename);
   await fs.writeFile(filePath, compressed);
 
@@ -135,10 +147,14 @@ export async function handleQrisImageUpload(file: File): Promise<QrisUploadResul
 }
 
 export async function deleteQrisImage(): Promise<void> {
-  const filePath = path.join(QRIS_UPLOAD_DIR, "qris.webp");
   try {
-    await fs.unlink(filePath);
+    const files = await fs.readdir(QRIS_UPLOAD_DIR);
+    for (const f of files) {
+      if (f.startsWith("qris")) {
+        await fs.unlink(path.join(QRIS_UPLOAD_DIR, f));
+      }
+    }
   } catch {
-    // File might not exist, ignore
+    // Folder might not exist, ignore
   }
 }
