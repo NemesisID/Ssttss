@@ -58,7 +58,7 @@ export async function deletePaymentProof(filePath: string): Promise<void> {
   }
 }
 
-const QRIS_UPLOAD_DIR = process.env.QRIS_UPLOAD_DIR || "./public/uploads/qris";
+const QRIS_UPLOAD_DIR = process.env.QRIS_UPLOAD_DIR || "./uploads/qris";
 
 interface QrisUploadResult {
   success: boolean;
@@ -156,5 +156,71 @@ export async function deleteQrisImage(): Promise<void> {
     }
   } catch {
     // Folder might not exist, ignore
+  }
+}
+
+const MERCH_OPTION_UPLOAD_DIR = "./uploads/merch-options";
+
+interface MerchOptionUploadResult {
+  success: boolean;
+  filePath?: string;
+  error?: string;
+}
+
+/**
+ * Upload gambar untuk satu opsi/varian merchandise.
+ * File disimpan sebagai opt-[timestamp]-[slug].webp
+ */
+export async function handleMerchOptionImageUpload(
+  file: File,
+  optionName: string
+): Promise<MerchOptionUploadResult> {
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return { success: false, error: "File harus berformat JPG, PNG, atau WebP" };
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    return { success: false, error: "Ukuran file maksimal 10MB" };
+  }
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  try {
+    await sharp(buffer).metadata();
+  } catch {
+    return { success: false, error: "File bukan gambar yang valid" };
+  }
+
+  const compressed = await sharp(buffer)
+    .resize(800, 800, { fit: "inside", withoutEnlargement: true })
+    .webp({ quality: 90 })
+    .toBuffer();
+
+  await fs.mkdir(MERCH_OPTION_UPLOAD_DIR, { recursive: true });
+
+  // Slug dari nama opsi untuk nama file yang lebih readable
+  const slug = optionName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .substring(0, 30);
+  const filename = `opt-${Date.now()}-${slug}.webp`;
+  const filePath = path.join(MERCH_OPTION_UPLOAD_DIR, filename);
+  await fs.writeFile(filePath, compressed);
+
+  return { success: true, filePath: `/uploads/merch-options/${filename}` };
+}
+
+/**
+ * Hapus file gambar opsi varian berdasarkan path yang tersimpan di database.
+ */
+export async function deleteMerchOptionImage(imagePath: string): Promise<void> {
+  try {
+    // imagePath contoh: /uploads/merch-options/opt-xxx.webp
+    const filename = path.basename(imagePath);
+    const fullPath = path.join(process.cwd(), MERCH_OPTION_UPLOAD_DIR, filename);
+    await fs.unlink(fullPath);
+  } catch {
+    // File might not exist, ignore
   }
 }

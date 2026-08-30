@@ -12,6 +12,32 @@ export const dynamic = "force-dynamic";
 const MERCH_UPLOAD_DIR = "./uploads/merch";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
+export type MerchOption = {
+  name: string;
+  imagePath: string | null;
+};
+
+/**
+ * Parse stored options string — backward compatible:
+ * - Lama: ["Ganci Logo ISCOM", "Tumbler"]  → migrasi ke format baru
+ * - Baru: [{"name":"...", "imagePath":"..."}]
+ */
+function parseOptions(raw: string | null): MerchOption[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((item) => {
+      if (typeof item === "string") {
+        return { name: item, imagePath: null };
+      }
+      return { name: item.name ?? "", imagePath: item.imagePath ?? null };
+    });
+  } catch {
+    return [];
+  }
+}
+
 /** GET: ambil konfigurasi merchandise + statistik pemilih */
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -28,12 +54,7 @@ export async function GET() {
     getSetting(SETTING_KEYS.MERCH_PRICE),
   ]);
 
-  let options: string[] = [];
-  try {
-    options = optionsStr ? JSON.parse(optionsStr) : [];
-  } catch {
-    options = [];
-  }
+  const options = parseOptions(optionsStr);
 
   // Hitung statistik pemilih per varian
   const stats: Record<string, number> = {};

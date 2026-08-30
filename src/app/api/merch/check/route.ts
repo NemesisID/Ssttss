@@ -69,7 +69,8 @@ export async function POST(req: NextRequest) {
       merchChoice: registration.merchChoice,
       merchSelectedAt: registration.merchSelectedAt,
     });
-  } catch {
+  } catch (error) {
+    console.error("Error in /api/merch/check:", error);
     return NextResponse.json({ error: "Gagal mengecek data" }, { status: 500 });
   }
 }

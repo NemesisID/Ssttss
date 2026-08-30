@@ -127,7 +127,7 @@ export default function RegistrationsPage() {
       {/* Custom Confirm Dialog */}
       {confirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#131825] border border-white/[0.1] rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+          <div className="bg-[#131825] border border-white/[0.1] rounded-2xl p-5 sm:p-6 w-full max-w-sm mx-4 shadow-2xl">
             {confirm.type === "delete" ? (
               <>
                 <div className="flex items-center gap-3 mb-4">
@@ -200,7 +200,7 @@ export default function RegistrationsPage() {
       {/* Edit Modal */}
       {editModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#131825] border border-white/[0.1] rounded-2xl p-6 w-full max-w-md shadow-2xl">
+        <div className="bg-[#131825] border border-white/[0.1] rounded-2xl p-5 sm:p-6 w-full max-w-md mx-4 shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-white font-semibold">Edit Data Peserta</h3>
               <button onClick={() => setEditModal(null)} className="text-slate-500 hover:text-white transition-colors">
@@ -259,26 +259,27 @@ export default function RegistrationsPage() {
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Peserta</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Peserta</h1>
           <p className="text-slate-500 text-sm mt-1">{pagination.total} total pendaftar</p>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Sync button */}
           <button
             onClick={() => setConfirm({ type: "sync" })}
             disabled={actionLoading}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium rounded-xl hover:bg-blue-500/20 transition-all duration-200 disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium rounded-xl hover:bg-blue-500/20 transition-all duration-200 disabled:opacity-50"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Sync Spreadsheet
+            <span className="hidden sm:inline">Sync Spreadsheet</span>
+            <span className="sm:hidden">Sync</span>
           </button>
           <a
             href={`/api/admin/export?status=${statusFilter}`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium rounded-xl hover:bg-emerald-500/20 transition-all duration-200"
+            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium rounded-xl hover:bg-emerald-500/20 transition-all duration-200"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -368,8 +369,8 @@ export default function RegistrationsPage() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden">
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/[0.06]">
@@ -396,11 +397,9 @@ export default function RegistrationsPage() {
                     <p className="text-slate-500 text-xs mt-0.5">{r.email}</p>
                   </td>
                   <td className="p-4 text-slate-300 font-mono text-xs">{r.noWhatsapp}</td>
-                  <td className="p-4 text-slate-300 text-xs">
-                    {r.prodi?.replace("_", " ")}
-                  </td>
-                  <td className="p-4">
-                    <div className="flex flex-wrap gap-1">
+                  <td className="p-4 text-slate-300 text-xs">{r.prodi?.replace("_", " ")}</td>
+                  <td className="p4">
+                    <div className="flex flex-wrap gap-1 p-4">
                       {r.divisions.map((d) => (
                         <span key={d.division} className="px-2 py-0.5 bg-white/[0.05] rounded text-[10px] text-slate-400">
                           {d.division.replace("_", " ")}
@@ -415,23 +414,11 @@ export default function RegistrationsPage() {
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
-                      <Link href={`/dash/registrations/${r.id}`} className="text-blue-400 hover:text-blue-300 text-xs font-medium hover:underline">
-                        Detail
-                      </Link>
+                      <Link href={`/dash/registrations/${r.id}`} className="text-blue-400 hover:text-blue-300 text-xs font-medium hover:underline">Detail</Link>
                       <span className="text-white/10">|</span>
-                      <button
-                        onClick={() => setEditModal({ id: r.id, nama: r.nama, npm: r.npm, prodi: r.prodi, email: r.email, noWhatsapp: r.noWhatsapp })}
-                        className="text-slate-400 hover:text-white text-xs font-medium transition-colors"
-                      >
-                        Edit
-                      </button>
+                      <button onClick={() => setEditModal({ id: r.id, nama: r.nama, npm: r.npm, prodi: r.prodi, email: r.email, noWhatsapp: r.noWhatsapp })} className="text-slate-400 hover:text-white text-xs font-medium transition-colors">Edit</button>
                       <span className="text-white/10">|</span>
-                      <button
-                        onClick={() => setConfirm({ type: "delete", id: r.id, nama: r.nama })}
-                        className="text-red-400/70 hover:text-red-400 text-xs font-medium transition-colors"
-                      >
-                        Hapus
-                      </button>
+                      <button onClick={() => setConfirm({ type: "delete", id: r.id, nama: r.nama })} className="text-red-400/70 hover:text-red-400 text-xs font-medium transition-colors">Hapus</button>
                     </div>
                   </td>
                 </tr>
@@ -439,6 +426,49 @@ export default function RegistrationsPage() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card List */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          <div className="flex justify-center py-10"><div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>
+        ) : data.length === 0 ? (
+          <div className="text-center py-10 text-slate-500 text-sm">Belum ada data pendaftar</div>
+        ) : (
+          data.map((r) => (
+            <div key={r.id} className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-white font-semibold text-sm truncate">{r.nama}</p>
+                  <p className="text-slate-500 text-xs mt-0.5 truncate">{r.email}</p>
+                </div>
+                <span className={`shrink-0 text-xs font-medium px-2 py-1 rounded-lg ${
+                  r.plan === "PAID" ? "bg-purple-500/10 text-purple-400" : "bg-slate-500/10 text-slate-400"
+                }`}>
+                  {r.plan === "PAID" ? "Berbayar" : "Gratis"}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                <span className="text-slate-400"><span className="text-slate-600">HP: </span>{r.noWhatsapp}</span>
+                <span className="text-slate-400"><span className="text-slate-600">Prodi: </span>{r.prodi?.replace("_", " ")}</span>
+              </div>
+              {r.divisions.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {r.divisions.map((d) => (
+                    <span key={d.division} className="px-2 py-0.5 bg-white/[0.05] rounded text-[10px] text-slate-400">
+                      {d.division.replace("_", " ")}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center gap-3 pt-1 border-t border-white/[0.04]">
+                <Link href={`/dash/registrations/${r.id}`} className="text-blue-400 text-xs font-medium">Detail</Link>
+                <button onClick={() => setEditModal({ id: r.id, nama: r.nama, npm: r.npm, prodi: r.prodi, email: r.email, noWhatsapp: r.noWhatsapp })} className="text-slate-400 text-xs font-medium">Edit</button>
+                <button onClick={() => setConfirm({ type: "delete", id: r.id, nama: r.nama })} className="text-red-400/70 text-xs font-medium ml-auto">Hapus</button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Pagination */}

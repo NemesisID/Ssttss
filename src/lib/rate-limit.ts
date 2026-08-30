@@ -16,16 +16,22 @@ export async function rateLimit(
   const now = Math.floor(Date.now() / 1000);
   const windowKey = `ratelimit:${key}:${Math.floor(now / windowSeconds)}`;
 
-  const current = await redis.incr(windowKey);
-  if (current === 1) {
-    await redis.expire(windowKey, windowSeconds);
+  try {
+    const current = await redis.incr(windowKey);
+    if (current === 1) {
+      await redis.expire(windowKey, windowSeconds);
+    }
+
+    const allowed = current <= maxRequests;
+    const remaining = Math.max(0, maxRequests - current);
+    const resetIn = windowSeconds - (now % windowSeconds);
+
+    return { allowed, remaining, resetIn };
+  } catch (error) {
+    console.error("Redis rate limit error:", error);
+    // Jika Redis error/down, biarkan request lolos (fallback)
+    return { allowed: true, remaining: 1, resetIn: 0 };
   }
-
-  const allowed = current <= maxRequests;
-  const remaining = Math.max(0, maxRequests - current);
-  const resetIn = windowSeconds - (now % windowSeconds);
-
-  return { allowed, remaining, resetIn };
 }
 
 export async function rateLimitByIP(

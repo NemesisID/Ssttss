@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
 
 const NAV_ITEMS = [
   { href: "/dash", label: "Dashboard", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
@@ -14,63 +13,96 @@ const NAV_ITEMS = [
   { href: "/dash/account", label: "Account", icon: "M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" },
 ];
 
-export default function Sidebar() {
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  // Helper untuk menentukan apakah menu sedang aktif
-  // Khusus untuk /dash, pastikan pathname benar-benar sama agar tidak aktif di semua subpage
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const pathname = usePathname();
+
   const isMenuActive = (href: string) => {
     if (href === "/dash") return pathname === "/dash";
     return pathname.startsWith(href);
   };
 
   return (
-    <aside className="w-64 bg-white/[0.02] border-r border-white/[0.06] p-5 flex flex-col">
-      {/* Brand */}
-      <div className="mb-8 px-2">
-        <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="ISCOM" className="h-10 w-auto object-contain" />
+    <>
+      {/* Mobile overlay backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-30 md:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed top-0 left-0 h-full z-40 w-72
+          bg-[#0a0e1a] border-r border-white/[0.06]
+          p-5 flex flex-col
+          transition-transform duration-300 ease-in-out
+          md:static md:z-auto md:w-64 md:translate-x-0 md:transition-none
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
+      >
+        {/* Brand + Close button mobile */}
+        <div className="mb-8 px-2 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="ISCOM" className="h-10 w-auto object-contain" />
+          </div>
+          {/* Close button hanya muncul di mobile */}
+          <button
+            onClick={onClose}
+            className="md:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-      </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1">
-        <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider px-3 mb-2">Menu</p>
-        {NAV_ITEMS.map((item) => {
-          const active = isMenuActive(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 ${
-                active
-                  ? "bg-gradient-to-r from-blue-500/10 to-cyan-500/10 text-blue-400 border border-blue-500/10"
-                  : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
-              }`}
-            >
-              <svg className={`w-[18px] h-[18px] shrink-0 ${active ? "text-blue-400" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
-              </svg>
-              <span className="font-medium">{item.label}</span>
-              {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400" />}
-            </Link>
-          );
-        })}
-      </nav>
+        {/* Navigation */}
+        <nav className="flex-1 space-y-1 overflow-y-auto">
+          <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider px-3 mb-2">Menu</p>
+          {NAV_ITEMS.map((item) => {
+            const active = isMenuActive(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all duration-200 ${
+                  active
+                    ? "bg-gradient-to-r from-blue-500/10 to-cyan-500/10 text-blue-400 border border-blue-500/10"
+                    : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                }`}
+              >
+                <svg className={`w-[18px] h-[18px] shrink-0 ${active ? "text-blue-400" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+                </svg>
+                <span className="font-medium">{item.label}</span>
+                {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-400" />}
+              </Link>
+            );
+          })}
+        </nav>
 
-      {/* Logout */}
-      <div className="border-t border-white/[0.06] pt-4 mt-4">
-        <button
-          onClick={() => signOut({ callbackUrl: "/dash/login" })}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/[0.05] transition-all duration-200 w-full"
-        >
-          <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-          <span className="font-medium">Logout</span>
-        </button>
-      </div>
-    </aside>
+        {/* Logout */}
+        <div className="border-t border-white/[0.06] pt-4 mt-4">
+          <button
+            onClick={() => signOut({ callbackUrl: "/dash/login" })}
+            className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/[0.05] transition-all duration-200 w-full"
+          >
+            <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span className="font-medium">Logout</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
