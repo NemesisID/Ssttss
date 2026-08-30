@@ -37,6 +37,7 @@ type EditModal = {
   prodi: string;
   email: string;
   noWhatsapp: string;
+  merchChoice?: string | null;
 };
 
 export default function RegistrationsPage() {
@@ -99,6 +100,7 @@ export default function RegistrationsPage() {
         prodi: editModal.prodi,
         email: editModal.email,
         noWhatsapp: editModal.noWhatsapp,
+        merchChoice: editModal.merchChoice,
       }),
     });
     setEditModal(null);
@@ -238,6 +240,16 @@ export default function RegistrationsPage() {
                   <option value="SAINS_DATA">Sains Data</option>
                   <option value="BISNIS_DIGITAL">Bisnis Digital</option>
                 </select>
+              </div>
+              <div>
+                <label className="text-slate-400 text-xs font-medium mb-1 block">Pilihan Merchandise (opsional)</label>
+                <input
+                  type="text"
+                  value={editModal.merchChoice || ""}
+                  onChange={(e) => setEditModal({ ...editModal, merchChoice: e.target.value || null })}
+                  placeholder="Kosongkan jika belum memilih"
+                  className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all hover:border-white/[0.15]"
+                />
               </div>
             </div>
             <div className="flex gap-2.5 mt-5">
@@ -416,7 +428,7 @@ export default function RegistrationsPage() {
                     <div className="flex items-center gap-2">
                       <Link href={`/dash/registrations/${r.id}`} className="text-blue-400 hover:text-blue-300 text-xs font-medium hover:underline">Detail</Link>
                       <span className="text-white/10">|</span>
-                      <button onClick={() => setEditModal({ id: r.id, nama: r.nama, npm: r.npm, prodi: r.prodi, email: r.email, noWhatsapp: r.noWhatsapp })} className="text-slate-400 hover:text-white text-xs font-medium transition-colors">Edit</button>
+                      <button onClick={() => setEditModal({ id: r.id, nama: r.nama, npm: r.npm, prodi: r.prodi, email: r.email, noWhatsapp: r.noWhatsapp, merchChoice: r.merchChoice })} className="text-slate-400 hover:text-white text-xs font-medium transition-colors">Edit</button>
                       <span className="text-white/10">|</span>
                       <button onClick={() => setConfirm({ type: "delete", id: r.id, nama: r.nama })} className="text-red-400/70 hover:text-red-400 text-xs font-medium transition-colors">Hapus</button>
                     </div>
@@ -463,7 +475,7 @@ export default function RegistrationsPage() {
               )}
               <div className="flex items-center gap-3 pt-1 border-t border-white/[0.04]">
                 <Link href={`/dash/registrations/${r.id}`} className="text-blue-400 text-xs font-medium">Detail</Link>
-                <button onClick={() => setEditModal({ id: r.id, nama: r.nama, npm: r.npm, prodi: r.prodi, email: r.email, noWhatsapp: r.noWhatsapp })} className="text-slate-400 text-xs font-medium">Edit</button>
+                <button onClick={() => setEditModal({ id: r.id, nama: r.nama, npm: r.npm, prodi: r.prodi, email: r.email, noWhatsapp: r.noWhatsapp, merchChoice: r.merchChoice })} className="text-slate-400 text-xs font-medium">Edit</button>
                 <button onClick={() => setConfirm({ type: "delete", id: r.id, nama: r.nama })} className="text-red-400/70 text-xs font-medium ml-auto">Hapus</button>
               </div>
             </div>
