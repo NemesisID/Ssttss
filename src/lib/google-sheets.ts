@@ -45,7 +45,7 @@ export async function appendToSheet(data: {
     `'${data.noWhatsapp}`, // Tambahkan kutip agar 0 di awal tidak hilang
     data.divisions.join(", "),
     data.plan === "PAID" ? "Berbayar" : data.plan === "FREE" ? "Gratis" : data.plan,
-    data.paymentProofUrl ? `https://iscom.isslab.web.id${data.paymentProofUrl}` : "-",
+    data.paymentProofUrl ? `https://iscom.islab.web.id${data.paymentProofUrl}` : "-",
     data.merchChoice || "-",
   ];
 
@@ -100,7 +100,7 @@ export async function syncAllToSheet(registrations: {
     `'${r.noWhatsapp}`,
     r.divisions.map((d) => d.division.replace(/_/g, " ")).join(", "),
     r.plan === "PAID" ? "Berbayar" : r.plan === "FREE" ? "Gratis" : r.plan,
-    r.paymentProofUrl ? `https://iscom.isslab.web.id${r.paymentProofUrl}` : "-",
+    r.paymentProofUrl ? `https://iscom.islab.web.id${r.paymentProofUrl}` : "-",
     r.merchChoice || "-",
   ]);
 
