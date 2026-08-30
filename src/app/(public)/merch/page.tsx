@@ -545,20 +545,36 @@ export default function MerchPage() {
 
           {/* Step: Success */}
           {step === "success" && (
-            <div className="text-center space-y-6">
-              <div className="relative">
-                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center">
-                  <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
+            <div className="text-center space-y-5">
+              {/* Gambar pilihan */}
+              {(() => {
+                const chosenOpt = merchConfig?.options.find((o) => o.name === selectedMerch);
+                const imgPath = chosenOpt?.imagePath || merchConfig?.imagePath || null;
+                const prefix = chosenOpt?.imagePath ? "merch-options" : "merch";
+                return imgPath ? (
+                  <div className="bg-white p-3 rounded-2xl shadow-xl shadow-black/20 mx-auto w-fit">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={resolveImageUrl(imgPath, prefix) ?? ""}
+                      alt={selectedMerch ?? "Merchandise"}
+                      className="w-full max-w-[200px] sm:max-w-[240px] h-auto rounded-lg"
+                    />
                   </div>
+                ) : null;
+              })()}
+
+              {/* Checkmark */}
+              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center">
+                <div className="w-11 h-11 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <h2 className="text-xl font-bold text-white">Pilihan Tersimpan!</h2>
-                <p className="text-slate-300 text-sm leading-relaxed max-w-md mx-auto">
+                <p className="text-slate-300 text-sm leading-relaxed">
                   Terima kasih{participant?.nama ? `, ${participant.nama}` : ""}! Pilihan merchandise kamu telah tersimpan:
                 </p>
                 {selectedMerch && (
