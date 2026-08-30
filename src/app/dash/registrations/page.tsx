@@ -222,8 +222,9 @@ export default function RegistrationsPage() {
                   <label className="text-slate-400 text-xs font-medium mb-1 block">{label}</label>
                   <input
                     type="text"
-                    value={editModal[field]}
+                    value={(editModal[field] as string) || ""}
                     onChange={(e) => setEditModal({ ...editModal, [field]: e.target.value })}
+
                     className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all hover:border-white/[0.15]"
                   />
                 </div>
