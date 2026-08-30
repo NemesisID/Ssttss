@@ -25,10 +25,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Pendaftaran tidak ditemukan" }, { status: 404 });
     }
 
-    // Hanya peserta PAID/DONE yang bisa pilih merch
-    if (registration.plan !== "PAID" || registration.paymentStatus !== "DONE") {
+    // Peserta plan PAID (berbayar saat daftar) langsung boleh pilih merch
+    // Peserta FREE hanya boleh setelah paymentStatus DONE (sudah bayar upgrade)
+    const canSelect =
+      registration.plan === "PAID" ||
+      (registration.plan === "FREE" && registration.paymentStatus === "DONE");
+
+    if (!canSelect) {
       return NextResponse.json({ error: "Hanya peserta paket spesial yang sudah membayar yang bisa memilih merchandise" }, { status: 403 });
     }
+
 
     // Update pilihan merch
     await prisma.registration.update({
