@@ -545,59 +545,67 @@ export default function MerchPage() {
 
           {/* Step: Success */}
           {step === "success" && (
-            <div className="text-center space-y-5">
-              {/* Gambar pilihan */}
-              {(() => {
-                const chosenOpt = merchConfig?.options.find((o) => o.name === selectedMerch);
-                const imgPath = chosenOpt?.imagePath || merchConfig?.imagePath || null;
-                const prefix = chosenOpt?.imagePath ? "merch-options" : "merch";
-                return imgPath ? (
-                  <div className="bg-white p-3 rounded-2xl shadow-xl shadow-black/20 mx-auto w-fit">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={resolveImageUrl(imgPath, prefix) ?? ""}
-                      alt={selectedMerch ?? "Merchandise"}
-                      className="w-full max-w-[200px] sm:max-w-[240px] h-auto rounded-lg"
-                    />
+            <div className="text-center space-y-6">
+              
+              {/* Header: Checkmark & Title */}
+              <div className="space-y-4">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center">
+                  <div className="w-11 h-11 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
-                ) : null;
-              })()}
-
-              {/* Checkmark */}
-              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center">
-                <div className="w-11 h-11 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-2">Pilihan Tersimpan!</h2>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    Terima kasih{participant?.nama ? `, ${participant.nama}` : ""}! Pilihan merchandise kamu telah tersimpan.
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <h2 className="text-xl font-bold text-white">Pilihan Tersimpan!</h2>
-                <p className="text-slate-300 text-sm leading-relaxed">
-                  Terima kasih{participant?.nama ? `, ${participant.nama}` : ""}! Pilihan merchandise kamu telah tersimpan:
-                </p>
+              {/* Pilihan Merchandise & Gambar */}
+              <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl p-5 mx-auto max-w-sm flex flex-col items-center gap-4">
+                {(() => {
+                  const chosenOpt = merchConfig?.options.find((o) => o.name === selectedMerch);
+                  const imgPath = chosenOpt?.imagePath || merchConfig?.imagePath || null;
+                  const prefix = chosenOpt?.imagePath ? "merch-options" : "merch";
+                  return imgPath ? (
+                    <div className="bg-white p-2.5 rounded-xl shadow-xl shadow-black/20 w-fit">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={resolveImageUrl(imgPath, prefix) ?? ""}
+                        alt={selectedMerch ?? "Merchandise"}
+                        className="w-full max-w-[160px] sm:max-w-[180px] h-auto rounded-lg"
+                      />
+                    </div>
+                  ) : null;
+                })()}
+
                 {selectedMerch && (
-                  <div className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl">
-                    <p className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 font-bold text-lg">{selectedMerch}</p>
+                  <div className="px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-xl w-full">
+                    <p className="text-blue-400 font-semibold text-lg">{selectedMerch}</p>
                   </div>
                 )}
-                <p className="text-slate-400 text-sm">
-                  Merchandise akan dibagikan saat acara. Pantau Instagram{" "}
-                  <a
-                    href="https://www.instagram.com/iscom_upnjatim"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold"
-                  >
-                    @iscom_upnjatim
-                  </a>{" "}
-                  untuk info lebih lanjut!
-                </p>
               </div>
+
+              {/* Footer */}
+              <p className="text-slate-400 text-sm">
+                Merchandise akan dibagikan saat acara. Pantau Instagram{" "}
+                <a
+                  href="https://www.instagram.com/iscom_upnjatim"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cyan-400 hover:text-cyan-300 transition-colors font-semibold"
+                >
+                  @iscom_upnjatim
+                </a>{" "}
+                dan grup WhatsApp ISCOM untuk info lebih lanjut!
+              </p>
             </div>
           )}
         </div>
+
 
         <p className="mt-5 text-slate-600 text-xs text-center">&copy; 2026 ISCOM UPN Veteran Jawa Timur</p>
       </div>
