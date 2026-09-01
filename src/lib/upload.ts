@@ -23,30 +23,28 @@ export async function handlePaymentProofUpload(file: File): Promise<UploadResult
     return { success: false, error: `Ukuran file maksimal ${MAX_FILE_SIZE / 1024 / 1024}MB` };
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  // Validate it's actually an image by reading metadata
   try {
-    await sharp(buffer).metadata();
-  } catch {
-    return { success: false, error: "File bukan gambar yang valid" };
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    // Compress and convert to webp (failOnError: false tolerates truncated/warning images)
+    const compressed = await sharp(buffer, { failOnError: false })
+      .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toBuffer();
+
+    // Generate random filename
+    const filename = `${crypto.randomUUID()}.webp`;
+    const filePath = path.join(UPLOAD_DIR, filename);
+
+    // Ensure directory exists
+    await fs.mkdir(UPLOAD_DIR, { recursive: true });
+    await fs.writeFile(filePath, compressed);
+
+    return { success: true, filePath: `/uploads/payment-proofs/${filename}` };
+  } catch (error) {
+    console.error("Payment proof upload error:", error);
+    return { success: false, error: "File gambar rusak atau tidak dapat diproses. Pastikan file gambar utuh." };
   }
-
-  // Compress and convert to webp
-  const compressed = await sharp(buffer)
-    .resize(1200, 1200, { fit: "inside", withoutEnlargement: true })
-    .webp({ quality: 80 })
-    .toBuffer();
-
-  // Generate random filename
-  const filename = `${crypto.randomUUID()}.webp`;
-  const filePath = path.join(UPLOAD_DIR, filename);
-
-  // Ensure directory exists
-  await fs.mkdir(UPLOAD_DIR, { recursive: true });
-  await fs.writeFile(filePath, compressed);
-
-  return { success: true, filePath: `/uploads/payment-proofs/${filename}` };
 }
 
 export async function deletePaymentProof(filePath: string): Promise<void> {
@@ -74,7 +72,7 @@ interface QrisUploadResult {
 async function decodeQrisFromImage(buffer: Buffer): Promise<string | null> {
   try {
     // Konversi ke raw RGBA pixel data menggunakan sharp
-    const { data, info } = await sharp(buffer)
+    const { data, info } = await sharp(buffer, { failOnError: false })
       .ensureAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
@@ -101,49 +99,48 @@ export async function handleQrisImageUpload(file: File): Promise<QrisUploadResul
     return { success: false, error: "Ukuran file maksimal 10MB" };
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-
   try {
-    await sharp(buffer).metadata();
-  } catch {
-    return { success: false, error: "File bukan gambar yang valid" };
-  }
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Decode QRIS string dari gambar sebelum dicompress
-  const qrisString = await decodeQrisFromImage(buffer);
-  if (!qrisString) {
-    return { success: false, error: "QR Code tidak terdeteksi di gambar. Pastikan gambar berisi QR Code QRIS yang jelas." };
-  }
-
-  // Validasi format QRIS (harus mulai dengan "000201")
-  if (!qrisString.startsWith("000201")) {
-    return { success: false, error: "Gambar tidak mengandung QR Code QRIS yang valid. Pastikan menggunakan QRIS statis dari bank/e-wallet." };
-  }
-
-  // Simpan sebagai qris-[timestamp].webp (replace file lama)
-  const compressed = await sharp(buffer)
-    .resize(800, 800, { fit: "inside", withoutEnlargement: true })
-    .webp({ quality: 90 })
-    .toBuffer();
-
-  // Hapus file qris lama jika ada
-  try {
-    const files = await fs.readdir(QRIS_UPLOAD_DIR);
-    for (const f of files) {
-      if (f.startsWith("qris")) {
-        await fs.unlink(path.join(QRIS_UPLOAD_DIR, f));
-      }
+    // Decode QRIS string dari gambar sebelum dicompress
+    const qrisString = await decodeQrisFromImage(buffer);
+    if (!qrisString) {
+      return { success: false, error: "QR Code tidak terdeteksi di gambar. Pastikan gambar berisi QR Code QRIS yang jelas." };
     }
-  } catch {
-    // Folder belum ada, skip
+
+    // Validasi format QRIS (harus mulai dengan "000201")
+    if (!qrisString.startsWith("000201")) {
+      return { success: false, error: "Gambar tidak mengandung QR Code QRIS yang valid. Pastikan menggunakan QRIS statis dari bank/e-wallet." };
+    }
+
+    // Simpan sebagai qris-[timestamp].webp (replace file lama)
+    const compressed = await sharp(buffer, { failOnError: false })
+      .resize(800, 800, { fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 90 })
+      .toBuffer();
+
+    // Hapus file qris lama jika ada
+    try {
+      const files = await fs.readdir(QRIS_UPLOAD_DIR);
+      for (const f of files) {
+        if (f.startsWith("qris")) {
+          await fs.unlink(path.join(QRIS_UPLOAD_DIR, f));
+        }
+      }
+    } catch {
+      // Folder belum ada, skip
+    }
+
+    await fs.mkdir(QRIS_UPLOAD_DIR, { recursive: true });
+    const filename = `qris-${Date.now()}.webp`;
+    const filePath = path.join(QRIS_UPLOAD_DIR, filename);
+    await fs.writeFile(filePath, compressed);
+
+    return { success: true, filePath: `/uploads/qris/${filename}`, qrisString };
+  } catch (error) {
+    console.error("QRIS upload error:", error);
+    return { success: false, error: "File gambar QRIS rusak atau tidak dapat diproses." };
   }
-
-  await fs.mkdir(QRIS_UPLOAD_DIR, { recursive: true });
-  const filename = `qris-${Date.now()}.webp`;
-  const filePath = path.join(QRIS_UPLOAD_DIR, filename);
-  await fs.writeFile(filePath, compressed);
-
-  return { success: true, filePath: `/uploads/qris/${filename}`, qrisString };
 }
 
 export async function deleteQrisImage(): Promise<void> {
@@ -183,32 +180,31 @@ export async function handleMerchOptionImageUpload(
     return { success: false, error: "Ukuran file maksimal 10MB" };
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-
   try {
-    await sharp(buffer).metadata();
-  } catch {
-    return { success: false, error: "File bukan gambar yang valid" };
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    const compressed = await sharp(buffer, { failOnError: false })
+      .resize(800, 800, { fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 90 })
+      .toBuffer();
+
+    await fs.mkdir(MERCH_OPTION_UPLOAD_DIR, { recursive: true });
+
+    // Slug dari nama opsi untuk nama file yang lebih readable
+    const slug = optionName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .substring(0, 30);
+    const filename = `opt-${Date.now()}-${slug}.webp`;
+    const filePath = path.join(MERCH_OPTION_UPLOAD_DIR, filename);
+    await fs.writeFile(filePath, compressed);
+
+    return { success: true, filePath: `/uploads/merch-options/${filename}` };
+  } catch (error) {
+    console.error("Merch option image upload error:", error);
+    return { success: false, error: "File gambar varian rusak atau tidak dapat diproses." };
   }
-
-  const compressed = await sharp(buffer)
-    .resize(800, 800, { fit: "inside", withoutEnlargement: true })
-    .webp({ quality: 90 })
-    .toBuffer();
-
-  await fs.mkdir(MERCH_OPTION_UPLOAD_DIR, { recursive: true });
-
-  // Slug dari nama opsi untuk nama file yang lebih readable
-  const slug = optionName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")
-    .substring(0, 30);
-  const filename = `opt-${Date.now()}-${slug}.webp`;
-  const filePath = path.join(MERCH_OPTION_UPLOAD_DIR, filename);
-  await fs.writeFile(filePath, compressed);
-
-  return { success: true, filePath: `/uploads/merch-options/${filename}` };
 }
 
 /**

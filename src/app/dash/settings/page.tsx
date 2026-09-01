@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 type Settings = {
   paid_plan_price?: string;
+  public_reg_price?: string;
   registration_open?: string;
   registration_closed_title?: string;
   registration_closed_message?: string;
@@ -32,6 +33,7 @@ export default function SettingsPage() {
     ]).then(([settingsData, qrisData]) => {
       setSettings({
         paid_plan_price: settingsData.paid_plan_price,
+        public_reg_price: settingsData.public_reg_price,
         registration_open: settingsData.registration_open,
         registration_closed_title: settingsData.registration_closed_title || "Pendaftaran Ditutup",
         registration_closed_message: settingsData.registration_closed_message || "Mohon maaf, pendaftaran Open Recruitment ISCOM 2026 saat ini sedang ditutup atau belum dibuka.",
@@ -256,6 +258,18 @@ export default function SettingsPage() {
                   onWheel={(e) => (e.target as HTMLInputElement).blur()}
                   className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 hover:border-white/[0.15] transition-all"
                 />
+              </div>
+              <div>
+                <label className="text-slate-400 text-xs font-medium mb-1.5 block">Harga Pendaftaran Umum (Rp)</label>
+                <input
+                  type="number"
+                  value={settings.public_reg_price || ""}
+                  onChange={(e) => setSettings({ ...settings, public_reg_price: e.target.value })}
+                  onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                  placeholder="25000"
+                  className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 hover:border-white/[0.15] transition-all"
+                />
+                <p className="text-slate-600 text-xs mt-1.5">Biaya pendaftaran untuk peserta umum (non-mahasiswa UPN)</p>
               </div>
             </div>
 

@@ -127,41 +127,40 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Ukuran file maksimal 10MB" }, { status: 400 });
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-
   try {
-    await sharp(buffer).metadata();
-  } catch {
-    return NextResponse.json({ error: "File bukan gambar yang valid" }, { status: 400 });
-  }
+    const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Compress ke webp
-  const compressed = await sharp(buffer)
-    .resize(800, 800, { fit: "inside", withoutEnlargement: true })
-    .webp({ quality: 90 })
-    .toBuffer();
+    // Compress ke webp (failOnError: false mentolerir file warning/truncated)
+    const compressed = await sharp(buffer, { failOnError: false })
+      .resize(800, 800, { fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 90 })
+      .toBuffer();
 
-  // Hapus file lama jika ada
-  try {
-    const files = await fs.readdir(MERCH_UPLOAD_DIR);
-    for (const f of files) {
-      if (f.startsWith("merch-")) {
-        await fs.unlink(path.join(MERCH_UPLOAD_DIR, f));
+    // Hapus file lama jika ada
+    try {
+      const files = await fs.readdir(MERCH_UPLOAD_DIR);
+      for (const f of files) {
+        if (f.startsWith("merch-")) {
+          await fs.unlink(path.join(MERCH_UPLOAD_DIR, f));
+        }
       }
+    } catch {
+      // Folder belum ada, skip
     }
-  } catch {
-    // Folder belum ada, skip
+
+    await fs.mkdir(MERCH_UPLOAD_DIR, { recursive: true });
+    const filename = `merch-${Date.now()}.webp`;
+    const filePath = path.join(MERCH_UPLOAD_DIR, filename);
+    await fs.writeFile(filePath, compressed);
+
+    const publicPath = `/uploads/merch/${filename}`;
+    await setSetting(SETTING_KEYS.MERCH_IMAGE_PATH, publicPath);
+
+    return NextResponse.json({ imagePath: publicPath });
+  } catch (error) {
+    console.error("Admin merch upload error:", error);
+    return NextResponse.json({ error: "File gambar rusak atau tidak dapat diproses" }, { status: 400 });
   }
-
-  await fs.mkdir(MERCH_UPLOAD_DIR, { recursive: true });
-  const filename = `merch-${Date.now()}.webp`;
-  const filePath = path.join(MERCH_UPLOAD_DIR, filename);
-  await fs.writeFile(filePath, compressed);
-
-  const publicPath = `/uploads/merch/${filename}`;
-  await setSetting(SETTING_KEYS.MERCH_IMAGE_PATH, publicPath);
-
-  return NextResponse.json({ imagePath: publicPath });
 }
 
 /** DELETE: hapus gambar merchandise */

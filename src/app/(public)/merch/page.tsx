@@ -69,7 +69,7 @@ export default function MerchPage() {
 
   const handleCheck = async () => {
     if (!npm.trim() || !noWhatsapp.trim()) {
-      setError("NPM dan Nomor WhatsApp wajib diisi");
+      setError("NPM/Email dan Nomor WhatsApp wajib diisi");
       return;
     }
     setLoading(true);
@@ -264,18 +264,17 @@ export default function MerchPage() {
             <div className="space-y-4">
               <div className="mb-5">
                 <h2 className="text-lg font-semibold text-white">Verifikasi Data</h2>
-                <p className="text-slate-500 text-sm mt-0.5">Masukkan NPM dan nomor WhatsApp yang terdaftar</p>
+                <p className="text-slate-500 text-sm mt-0.5">Masukkan NPM atau Email dan nomor WhatsApp yang terdaftar</p>
               </div>
 
               <div>
-                <label className="text-slate-400 text-xs font-medium mb-1.5 block">NPM</label>
+                <label className="text-slate-400 text-xs font-medium mb-1.5 block">NPM / Email</label>
                 <input
                   type="text"
-                  inputMode="numeric"
                   value={npm}
                   onChange={(e) => setNpm(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleCheck()}
-                  placeholder="Masukkan NPM kamu"
+                  placeholder="Masukkan NPM atau Email kamu"
                   className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 hover:border-white/[0.15] transition-all placeholder:text-slate-600"
                 />
               </div>

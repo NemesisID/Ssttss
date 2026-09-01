@@ -24,6 +24,23 @@ export const personalInfoSchema = z.object({
     .regex(/^(08|\+628)\d{8,13}$/, "Format nomor salah, contoh: 08123456789"),
 });
 
+/** Schema untuk pendaftar umum: tanpa NPM, prodi, dan email bebas domain */
+export const personalInfoSchemaPublic = z.object({
+  nama: z
+    .string()
+    .min(1, "Nama lengkap wajib diisi")
+    .min(3, "Nama terlalu pendek, minimal 3 karakter")
+    .max(255),
+  email: z
+    .string()
+    .min(1, "Email wajib diisi")
+    .email("Format email tidak valid"),
+  noWhatsapp: z
+    .string()
+    .min(1, "Nomor WhatsApp wajib diisi")
+    .regex(/^(08|\+628)\d{8,13}$/, "Format nomor salah, contoh: 08123456789"),
+});
+
 export const divisionSchema = z.object({
   divisions: z
     .array(z.enum(["PROGRAMMING", "DATA", "BUSINESS_PLAN", "UI_UX"]))
@@ -31,7 +48,7 @@ export const divisionSchema = z.object({
 });
 
 export const planSchema = z.object({
-  plan: z.enum(["FREE", "PAID"], {
+  plan: z.enum(["FREE", "PAID", "PAID_REG"], {
     errorMap: () => ({ message: "Pilih salah satu plan" }),
   }),
   paymentProofUrl: z.string().optional(),
@@ -41,7 +58,14 @@ export const registrationSchema = personalInfoSchema
   .merge(divisionSchema)
   .merge(planSchema);
 
+/** Schema registrasi untuk pendaftar umum */
+export const registrationSchemaPublic = personalInfoSchemaPublic
+  .merge(divisionSchema)
+  .merge(planSchema);
+
 export type PersonalInfoInput = z.infer<typeof personalInfoSchema>;
+export type PersonalInfoPublicInput = z.infer<typeof personalInfoSchemaPublic>;
 export type DivisionInput = z.infer<typeof divisionSchema>;
 export type PlanInput = z.infer<typeof planSchema>;
 export type RegistrationInput = z.infer<typeof registrationSchema>;
+

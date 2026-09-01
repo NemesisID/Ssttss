@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { personalInfoSchema } from "@/lib/validation";
+import { personalInfoSchema, personalInfoSchemaPublic } from "@/lib/validation";
 import type { FormData } from "@/app/(public)/open-recruitment/page";
 
 type Props = {
@@ -9,14 +9,18 @@ type Props = {
   onChange: (data: Partial<FormData>) => void;
   onNext: () => void;
   onAlreadyRegistered: (registrationId: string) => void;
+  registrationType: "MAHASISWA" | "UMUM";
 };
 
-export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegistered }: Props) {
+export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegistered, registrationType }: Props) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [checking, setChecking] = useState(false);
 
+  const isUmum = registrationType === "UMUM";
+
   const validate = () => {
-    const result = personalInfoSchema.safeParse(data);
+    const schema = isUmum ? personalInfoSchemaPublic : personalInfoSchema;
+    const result = schema.safeParse(data);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.errors.forEach((e) => {
@@ -37,7 +41,12 @@ export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegi
       const res = await fetch("/api/check-participant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ npm: data.npm, email: data.email }),
+        body: JSON.stringify({
+          npm: isUmum ? undefined : data.npm,
+          email: data.email,
+          noWhatsapp: data.noWhatsapp,
+          registrationType,
+        }),
       });
       
       if (!res.ok) {
@@ -51,11 +60,11 @@ export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegi
       
       const result = await res.json();
       if (result.exists) {
-        if (result.field === "NPM" && result.registrationId) {
-          // NPM sudah terdaftar → langsung ke halaman sukses
+        if (result.registrationId) {
           onAlreadyRegistered(result.registrationId);
           return;
         }
+        setErrors({ ...errors, server: `${result.field} sudah terdaftar.` });
         setChecking(false);
         return;
       }
@@ -76,7 +85,9 @@ export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegi
     <div className="space-y-4">
       <div className="mb-5">
         <h2 className="text-lg font-semibold text-white">Data Diri</h2>
-        <p className="text-slate-500 text-sm mt-0.5">Lengkapi informasi pribadi kamu</p>
+        <p className="text-slate-500 text-sm mt-0.5">
+          {isUmum ? "Lengkapi data diri kamu (pendaftar umum)" : "Lengkapi informasi pribadi kamu"}
+        </p>
       </div>
 
       {errors.server && (
@@ -97,39 +108,45 @@ export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegi
         {errors.nama && <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-red-400" />{errors.nama}</p>}
       </div>
 
-      <div>
-        <label className="text-slate-400 text-xs font-medium mb-1.5 block">NPM</label>
-        <input
-          type="text"
-          placeholder="Masukkan NPM"
-          value={data.npm}
-          onChange={(e) => onChange({ npm: e.target.value })}
-          className={inputClass("npm")}
-        />
-        {errors.npm && <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-red-400" />{errors.npm}</p>}
-      </div>
+      {!isUmum && (
+        <>
+          <div>
+            <label className="text-slate-400 text-xs font-medium mb-1.5 block">NPM</label>
+            <input
+              type="text"
+              placeholder="Masukkan NPM"
+              value={data.npm}
+              onChange={(e) => onChange({ npm: e.target.value })}
+              className={inputClass("npm")}
+            />
+            {errors.npm && <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-red-400" />{errors.npm}</p>}
+          </div>
+
+          <div>
+            <label className="text-slate-400 text-xs font-medium mb-1.5 block">Program Studi</label>
+            <select
+              value={data.prodi}
+              onChange={(e) => onChange({ prodi: e.target.value })}
+              className={inputClass("prodi")}
+            >
+              <option value="" disabled>Pilih Program Studi</option>
+              <option value="INFORMATIKA">Informatika</option>
+              <option value="SISTEM_INFORMASI">Sistem Informasi</option>
+              <option value="SAINS_DATA">Sains Data</option>
+              <option value="BISNIS_DIGITAL">Bisnis Digital</option>
+            </select>
+            {errors.prodi && <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-red-400" />{errors.prodi}</p>}
+          </div>
+        </>
+      )}
 
       <div>
-        <label className="text-slate-400 text-xs font-medium mb-1.5 block">Program Studi</label>
-        <select
-          value={data.prodi}
-          onChange={(e) => onChange({ prodi: e.target.value })}
-          className={inputClass("prodi")}
-        >
-          <option value="" disabled>Pilih Program Studi</option>
-          <option value="INFORMATIKA">Informatika</option>
-          <option value="SISTEM_INFORMASI">Sistem Informasi</option>
-          <option value="SAINS_DATA">Sains Data</option>
-          <option value="BISNIS_DIGITAL">Bisnis Digital</option>
-        </select>
-        {errors.prodi && <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-red-400" />{errors.prodi}</p>}
-      </div>
-
-      <div>
-        <label className="text-slate-400 text-xs font-medium mb-1.5 block">Email UPN</label>
+        <label className="text-slate-400 text-xs font-medium mb-1.5 block">
+          {isUmum ? "Email" : "Email UPN"}
+        </label>
         <input
           type="email"
-          placeholder="npm@student.upnjatim.ac.id"
+          placeholder={isUmum ? "email@contoh.com" : "npm@student.upnjatim.ac.id"}
           value={data.email}
           onChange={(e) => onChange({ email: e.target.value })}
           className={inputClass("email")}
@@ -169,3 +186,4 @@ export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegi
     </div>
   );
 }
+

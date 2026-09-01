@@ -11,7 +11,23 @@ type Props = {
 };
 
 export default function PlanStep({ data, onChange, onNext, onBack, loading }: Props) {
-  const plans = [
+  const isUmum = data.registrationType === "UMUM";
+
+  const plans = isUmum ? [
+    {
+      value: "PAID_REG",
+      label: "Hanya Pendaftaran",
+      price: "Biaya Normal",
+      features: ["Akses semua materi", "Sertifikat Peserta (S&K Berlaku)", "Grup WhatsApp divisi"],
+    },
+    {
+      value: "PAID",
+      label: "Pendaftaran + Merchandise",
+      price: "Normal + Rp 15.000",
+      features: ["Semua benefit", "Sticker eksklusif ISCOM", "Gantungan kunci ISCOM"],
+      badge: "Rekomendasi",
+    },
+  ] : [
     {
       value: "FREE",
       label: "Paket Gratis",

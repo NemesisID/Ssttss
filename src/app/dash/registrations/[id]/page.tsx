@@ -6,8 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 type Registration = {
   id: string;
   nama: string;
-  npm: string;
-  prodi: string;
+  npm: string | null;
+  prodi: string | null;
   email: string;
   noWhatsapp: string;
   plan: string;
@@ -80,8 +80,8 @@ export default function RegistrationDetailPage() {
       <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-6 mb-5">
         <div className="grid grid-cols-2 gap-5">
           {[
-            { label: "NPM", value: data.npm },
-            { label: "Prodi", value: data.prodi.replace("_", " ") },
+            { label: "NPM", value: data.npm || "-" },
+            { label: "Prodi", value: data.prodi?.replace("_", " ") || "-" },
             { label: "Email", value: data.email },
             { label: "WhatsApp", value: data.noWhatsapp },
             { label: "Divisi", value: data.divisions.map((d) => d.division.replace("_", " ")).join(", ") },

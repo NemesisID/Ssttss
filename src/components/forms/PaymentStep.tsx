@@ -4,16 +4,24 @@ import { useState, useEffect, useCallback } from "react";
 
 type Props = {
   onSuccess: (filePath: string) => void;
+  registrationType?: "MAHASISWA" | "UMUM";
+  plan?: string;
 };
 
-export default function PaymentStep({ onSuccess }: Props) {
+export default function PaymentStep({ onSuccess, registrationType, plan }: Props) {
   const [qrImage, setQrImage] = useState<string | null>(null); // QR dinamis dengan nominal sudah terinjeksi
   const [amount, setAmount] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
+  const isUmum = registrationType === "UMUM";
+
   const generateQris = useCallback(async () => {
-    const res = await fetch("/api/payment/generate-qris", { cache: "no-store" });
+    let url = isUmum ? "/api/payment/generate-qris?type=umum" : "/api/payment/generate-qris";
+    if (plan) {
+      url += url.includes("?") ? `&plan=${plan}` : `?plan=${plan}`;
+    }
+    const res = await fetch(url, { cache: "no-store" });
     const json = await res.json();
     if (res.ok) {
       setQrImage(json.qrImage);
@@ -21,7 +29,7 @@ export default function PaymentStep({ onSuccess }: Props) {
     } else {
       setError(json.error);
     }
-  }, []);
+  }, [isUmum]);
 
   useEffect(() => {
     generateQris();
@@ -44,7 +52,7 @@ export default function PaymentStep({ onSuccess }: Props) {
       try {
         json = await res.json();
       } catch (err) {
-        setError(`Terjadi kesalahan di server. Status HTTP: ${res.status}`);
+        setError("Gagal mengupload. Pastikan file gambar tidak rusak dan coba lagi. Jika masih gagal, hubungi panitia.");
         setUploading(false);
         return;
       }
@@ -52,10 +60,14 @@ export default function PaymentStep({ onSuccess }: Props) {
       if (res.ok && json.filePath) {
         onSuccess(json.filePath);
       } else {
-        setError(json.error || "Gagal upload bukti bayar");
+        // Tampilkan pesan user-friendly, bukan error teknis
+        const userMessage = json.error && !json.error.includes("500") && !json.error.includes("Internal")
+          ? json.error
+          : "Gagal mengupload bukti pembayaran. Pastikan file gambar utuh dan tidak rusak, lalu coba lagi.";
+        setError(userMessage);
       }
     } catch (error) {
-      setError("Gagal terhubung ke server. Periksa koneksi internet Anda.");
+      setError("Gagal terhubung ke server. Periksa koneksi internet Anda dan coba lagi.");
     }
     setUploading(false);
   };
@@ -64,7 +76,9 @@ export default function PaymentStep({ onSuccess }: Props) {
     <div className="space-y-5">
       <div>
         <h2 className="text-lg font-semibold text-white">Pembayaran</h2>
-        <p className="text-slate-500 text-sm mt-0.5">Scan QRIS lalu upload bukti bayar</p>
+        <p className="text-slate-500 text-sm mt-0.5">
+          {isUmum ? "Bayar biaya pendaftaran umum" : "Scan QRIS lalu upload bukti bayar"}
+        </p>
       </div>
 
       {error && (
@@ -96,7 +110,9 @@ export default function PaymentStep({ onSuccess }: Props) {
           <p className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 font-bold text-3xl">
             Rp {amount.toLocaleString("id-ID")}
           </p>
-          <p className="text-slate-500 text-xs">Nominal sudah terisi otomatis — langsung scan &amp; bayar</p>
+          <p className="text-slate-500 text-xs">
+            {isUmum ? "Biaya pendaftaran umum — langsung scan & bayar" : "Nominal sudah terisi otomatis — langsung scan & bayar"}
+          </p>
         </div>
       )}
 
@@ -136,3 +152,4 @@ export default function PaymentStep({ onSuccess }: Props) {
     </div>
   );
 }
+

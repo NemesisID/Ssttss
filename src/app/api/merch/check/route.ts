@@ -29,9 +29,14 @@ export async function POST(req: NextRequest) {
 
     const normalizedInput = normalizePhone(noWhatsapp);
 
-    // Cari berdasarkan NPM
-    const registration = await prisma.registration.findUnique({
-      where: { npm },
+    // Cari berdasarkan NPM atau Email
+    const registration = await prisma.registration.findFirst({
+      where: {
+        OR: [
+          { npm },
+          { email: npm },
+        ],
+      },
       select: {
         id: true,
         nama: true,

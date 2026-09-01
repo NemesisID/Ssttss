@@ -6,8 +6,8 @@ import Link from "next/link";
 type Registration = {
   id: string;
   nama: string;
-  npm: string;
-  prodi: string;
+  npm: string | null;
+  prodi: string | null;
   email: string;
   noWhatsapp: string;
   plan: string;
@@ -33,8 +33,8 @@ type ConfirmDialog = {
 type EditModal = {
   id: string;
   nama: string;
-  npm: string;
-  prodi: string;
+  npm: string | null;
+  prodi: string | null;
   email: string;
   noWhatsapp: string;
   merchChoice?: string | null;
@@ -232,7 +232,7 @@ export default function RegistrationsPage() {
               <div>
                 <label className="text-slate-400 text-xs font-medium mb-1 block">Program Studi</label>
                 <select
-                  value={editModal.prodi}
+                  value={editModal.prodi || ""}
                   onChange={(e) => setEditModal({ ...editModal, prodi: e.target.value })}
                   className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none hover:border-white/[0.15] transition-all"
                 >

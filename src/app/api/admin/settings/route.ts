@@ -22,6 +22,7 @@ export async function PUT(req: NextRequest) {
   const body = await req.json();
   const allowedKeys = [
     "paid_plan_price",
+    "public_reg_price",
     "registration_open",
     "registration_closed_title",
     "registration_closed_message",

@@ -11,19 +11,32 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { npm, email } = await req.json();
+    const { npm, email, noWhatsapp, registrationType } = await req.json();
+    const isUmum = registrationType === "UMUM";
 
-    if (!npm || !email) {
-      return NextResponse.json({ error: "NPM dan Email wajib diisi" }, { status: 400 });
-    }
-
-    const existing = await prisma.registration.findFirst({
-      where: { OR: [{ npm }, { email }] },
-      select: { id: true, npm: true, email: true },
-    });
-
-    if (existing) {
-      return NextResponse.json({ exists: true, field: "NPM", registrationId: existing.id });
+    if (isUmum) {
+      if (!email || !noWhatsapp) {
+        return NextResponse.json({ error: "Email dan No. WhatsApp wajib diisi" }, { status: 400 });
+      }
+      const existing = await prisma.registration.findFirst({
+        where: { OR: [{ email }, { noWhatsapp }] },
+        select: { id: true, email: true, noWhatsapp: true },
+      });
+      if (existing) {
+        const field = existing.email === email ? "Email" : "Nomor WhatsApp";
+        return NextResponse.json({ exists: true, field, registrationId: existing.id });
+      }
+    } else {
+      if (!npm || !email) {
+        return NextResponse.json({ error: "NPM dan Email wajib diisi" }, { status: 400 });
+      }
+      const existing = await prisma.registration.findFirst({
+        where: { OR: [{ npm }, { email }] },
+        select: { id: true, npm: true, email: true },
+      });
+      if (existing) {
+        return NextResponse.json({ exists: true, field: "NPM", registrationId: existing.id });
+      }
     }
 
     return NextResponse.json({ exists: false });
@@ -31,3 +44,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Gagal mengecek data" }, { status: 500 });
   }
 }
+

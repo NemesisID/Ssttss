@@ -24,6 +24,7 @@ enum Division {
 enum Plan {
   FREE
   PAID
+  PAID_REG
 }
 
 enum PaymentStatus {
@@ -46,9 +47,10 @@ enum AdminRole {
 
 model Registration {
   id                String               @id @default(cuid())
+  registrationType  String               @default("MAHASISWA") @db.VarChar(20)
   nama              String               @db.VarChar(255)
-  npm               String               @unique @db.VarChar(20)
-  prodi             Prodi
+  npm               String?              @unique @db.VarChar(20)
+  prodi             String?              @db.VarChar(50)
   email             String               @unique @db.VarChar(255)
   noWhatsapp        String               @db.VarChar(20)
   plan              Plan
@@ -66,6 +68,7 @@ model Registration {
 
   @@index([paymentStatus])
   @@index([createdAt])
+  @@index([registrationType])
 }
 
 model RegistrationDivision {
