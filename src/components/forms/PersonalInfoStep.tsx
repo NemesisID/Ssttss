@@ -9,12 +9,15 @@ type Props = {
   onChange: (data: Partial<FormData>) => void;
   onNext: () => void;
   onAlreadyRegistered: (registrationId: string) => void;
-  registrationType: "MAHASISWA" | "UMUM";
+  registrationType?: "MAHASISWA" | "UMUM";
 };
 
 export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegistered, registrationType }: Props) {
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [checking, setChecking] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isProdiLainnya, setIsProdiLainnya] = useState(
+    data.prodi ? !["INFORMATIKA", "SISTEM_INFORMASI", "SAINS_DATA", "BISNIS_DIGITAL"].includes(data.prodi) : false
+  );
 
   const isUmum = registrationType === "UMUM";
 
@@ -125,8 +128,16 @@ export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegi
           <div>
             <label className="text-slate-400 text-xs font-medium mb-1.5 block">Program Studi</label>
             <select
-              value={data.prodi}
-              onChange={(e) => onChange({ prodi: e.target.value })}
+              value={isProdiLainnya ? "LAINNYA" : data.prodi}
+              onChange={(e) => {
+                if (e.target.value === "LAINNYA") {
+                  setIsProdiLainnya(true);
+                  onChange({ prodi: "" });
+                } else {
+                  setIsProdiLainnya(false);
+                  onChange({ prodi: e.target.value });
+                }
+              }}
               className={inputClass("prodi")}
             >
               <option value="" disabled>Pilih Program Studi</option>
@@ -134,7 +145,17 @@ export default function PersonalInfoStep({ data, onChange, onNext, onAlreadyRegi
               <option value="SISTEM_INFORMASI">Sistem Informasi</option>
               <option value="SAINS_DATA">Sains Data</option>
               <option value="BISNIS_DIGITAL">Bisnis Digital</option>
+              <option value="LAINNYA">Lainnya</option>
             </select>
+            {isProdiLainnya && (
+              <input
+                type="text"
+                placeholder="Masukkan Program Studi Anda"
+                value={data.prodi}
+                onChange={(e) => onChange({ prodi: e.target.value })}
+                className={inputClass("prodi") + " mt-3"}
+              />
+            )}
             {errors.prodi && <p className="text-red-400 text-xs mt-1.5 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-red-400" />{errors.prodi}</p>}
           </div>
         </>

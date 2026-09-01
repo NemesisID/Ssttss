@@ -232,15 +232,37 @@ export default function RegistrationsPage() {
               <div>
                 <label className="text-slate-400 text-xs font-medium mb-1 block">Program Studi</label>
                 <select
-                  value={editModal.prodi || ""}
-                  onChange={(e) => setEditModal({ ...editModal, prodi: e.target.value })}
+                  value={
+                    !editModal.prodi ? "" : 
+                    ["INFORMATIKA", "SISTEM_INFORMASI", "SAINS_DATA", "BISNIS_DIGITAL"].includes(editModal.prodi)
+                      ? editModal.prodi
+                      : "LAINNYA"
+                  }
+                  onChange={(e) => {
+                    if (e.target.value === "LAINNYA") {
+                      setEditModal({ ...editModal, prodi: "" });
+                    } else {
+                      setEditModal({ ...editModal, prodi: e.target.value });
+                    }
+                  }}
                   className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none hover:border-white/[0.15] transition-all"
                 >
+                  <option value="" disabled>Pilih Program Studi</option>
                   <option value="INFORMATIKA">Informatika</option>
                   <option value="SISTEM_INFORMASI">Sistem Informasi</option>
                   <option value="SAINS_DATA">Sains Data</option>
                   <option value="BISNIS_DIGITAL">Bisnis Digital</option>
+                  <option value="LAINNYA">Lainnya (Ketik Manual)</option>
                 </select>
+                {editModal.prodi !== null && !["INFORMATIKA", "SISTEM_INFORMASI", "SAINS_DATA", "BISNIS_DIGITAL", ""].includes(editModal.prodi) && (
+                  <input
+                    type="text"
+                    placeholder="Masukkan program studi"
+                    value={editModal.prodi}
+                    onChange={(e) => setEditModal({ ...editModal, prodi: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white text-sm focus:outline-none hover:border-white/[0.15] transition-all mt-2"
+                  />
+                )}
               </div>
               <div>
                 <label className="text-slate-400 text-xs font-medium mb-1 block">Pilihan Merchandise (opsional)</label>
