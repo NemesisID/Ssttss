@@ -26,6 +26,7 @@ export async function PUT(req: NextRequest) {
     "registration_open",
     "registration_closed_title",
     "registration_closed_message",
+    "division_edit_open",
   ];
 
   for (const [key, value] of Object.entries(body)) {

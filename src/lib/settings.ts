@@ -22,6 +22,8 @@ export const SETTING_KEYS = {
   PAID_PLAN_PRICE: "paid_plan_price",
   PUBLIC_REG_PRICE: "public_reg_price",
   REGISTRATION_OPEN: "registration_open",
+  /** Buka/tutup akses peserta untuk mengubah divisi yang sudah dipilih */
+  DIVISION_EDIT_OPEN: "division_edit_open",
   REGISTRATION_CLOSED_TITLE: "registration_closed_title",
   REGISTRATION_CLOSED_MESSAGE: "registration_closed_message",
   /** Path ke file gambar QRIS yang diupload admin (disimpan di uploads/qris/) */

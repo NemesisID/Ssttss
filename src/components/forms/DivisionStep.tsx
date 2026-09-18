@@ -1,12 +1,13 @@
 "use client";
 
-import type { FormData } from "@/app/(public)/open-recruitment/page";
-
 type Props = {
-  data: FormData;
-  onChange: (data: Partial<FormData>) => void;
+  data: { divisions: string[] };
+  onChange: (data: Partial<{ divisions: string[] }>) => void;
   onNext: () => void;
   onBack: () => void;
+  /** Label tombol utama. Default "Selanjutnya" (alur pendaftaran). */
+  submitLabel?: string;
+  loading?: boolean;
 };
 
 const DIVISIONS = [
@@ -16,7 +17,7 @@ const DIVISIONS = [
   { value: "UI_UX", label: "UI/UX", desc: "Belajar merancang tampilan aplikasi atau website yang menarik serta mudah digunakan.", icon: "M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" },
 ];
 
-export default function DivisionStep({ data, onChange, onNext, onBack }: Props) {
+export default function DivisionStep({ data, onChange, onNext, onBack, submitLabel = "Selanjutnya", loading }: Props) {
   const toggle = (division: string) => {
     const current = data.divisions;
     if (current.includes(division)) {
@@ -84,10 +85,18 @@ export default function DivisionStep({ data, onChange, onNext, onBack }: Props) 
         </button>
         <button
           onClick={onNext}
-          disabled={!canProceed}
+          disabled={!canProceed || loading}
           className="flex-1 py-3.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed text-white font-medium rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:shadow-none active:scale-[0.98] text-sm"
         >
-          Selanjutnya
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Menyimpan...
+            </span>
+          ) : submitLabel}
         </button>
       </div>
     </div>

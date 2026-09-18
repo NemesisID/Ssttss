@@ -1,42 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { rateLimitByIP } from "@/lib/rate-limit";
+import { getSetting, SETTING_KEYS } from "@/lib/settings";
 import { normalizePhone } from "@/lib/phone";
 
+/** Verifikasi peserta (NPM/Email + No. WhatsApp) lalu kirim divisi yang sedang diambil */
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") || "unknown";
-  const { allowed } = await rateLimitByIP(ip, "merch-check", 15, 3600);
+  const { allowed } = await rateLimitByIP(ip, "divisi-check", 15, 3600);
   if (!allowed) {
     return NextResponse.json({ error: "Terlalu banyak request. Coba lagi nanti." }, { status: 429 });
+  }
+
+  const editOpen = await getSetting(SETTING_KEYS.DIVISION_EDIT_OPEN);
+  if (editOpen !== "true") {
+    return NextResponse.json({ error: "Edit divisi sedang ditutup." }, { status: 403 });
   }
 
   try {
     const { npm, noWhatsapp } = await req.json();
 
     if (!npm || !noWhatsapp) {
-      return NextResponse.json({ error: "NPM dan Nomor WhatsApp wajib diisi" }, { status: 400 });
+      return NextResponse.json({ error: "NPM/Email dan Nomor WhatsApp wajib diisi" }, { status: 400 });
     }
 
-    const normalizedInput = normalizePhone(noWhatsapp);
-
-    // Cari berdasarkan NPM atau Email
     const registration = await prisma.registration.findFirst({
-      where: {
-        OR: [
-          { npm },
-          { email: npm },
-        ],
-      },
+      where: { OR: [{ npm }, { email: npm }] },
       select: {
         id: true,
         nama: true,
-        npm: true,
-        prodi: true,
         noWhatsapp: true,
         plan: true,
-        paymentStatus: true,
-        merchChoice: true,
-        merchSelectedAt: true,
+        divisions: { select: { division: true } },
       },
     });
 
@@ -44,12 +39,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ exists: false });
     }
 
-    // Cocokkan nomor WhatsApp
-    const normalizedDb = normalizePhone(registration.noWhatsapp);
-    if (normalizedDb !== normalizedInput) {
+    if (normalizePhone(registration.noWhatsapp) !== normalizePhone(noWhatsapp)) {
       return NextResponse.json({
         exists: false,
-        message: "NPM ditemukan tetapi nomor WhatsApp tidak cocok.",
+        message: "NPM/Email ditemukan tetapi nomor WhatsApp tidak cocok.",
       });
     }
 
@@ -57,15 +50,11 @@ export async function POST(req: NextRequest) {
       exists: true,
       id: registration.id,
       nama: registration.nama,
-      npm: registration.npm,
-      prodi: registration.prodi,
       plan: registration.plan,
-      paymentStatus: registration.paymentStatus,
-      merchChoice: registration.merchChoice,
-      merchSelectedAt: registration.merchSelectedAt,
+      divisions: registration.divisions.map((d) => d.division),
     });
   } catch (error) {
-    console.error("Error in /api/merch/check:", error);
+    console.error("Error in /api/divisi/check:", error);
     return NextResponse.json({ error: "Gagal mengecek data" }, { status: 500 });
   }
 }

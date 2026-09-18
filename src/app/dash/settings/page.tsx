@@ -8,6 +8,7 @@ type Settings = {
   registration_open?: string;
   registration_closed_title?: string;
   registration_closed_message?: string;
+  division_edit_open?: string;
 };
 
 export default function SettingsPage() {
@@ -37,6 +38,7 @@ export default function SettingsPage() {
         registration_open: settingsData.registration_open,
         registration_closed_title: settingsData.registration_closed_title || "Pendaftaran Ditutup",
         registration_closed_message: settingsData.registration_closed_message || "Mohon maaf, pendaftaran Open Recruitment ISCOM 2026 saat ini sedang ditutup atau belum dibuka.",
+        division_edit_open: settingsData.division_edit_open,
       });
       if (qrisData.imagePath) {
         setQrisImageUrl(
@@ -209,6 +211,23 @@ export default function SettingsPage() {
             >
               <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${
                 settings.registration_open === "true" ? "translate-x-7" : "translate-x-1"
+              }`} />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-white/[0.02] rounded-xl border border-white/[0.04]">
+            <div>
+              <p className="text-white text-sm font-medium">Edit Divisi Peserta</p>
+              <p className="text-slate-500 text-xs mt-0.5">Buka atau tutup akses peserta untuk mengubah divisi</p>
+            </div>
+            <button
+              onClick={() => setSettings({ ...settings, division_edit_open: settings.division_edit_open === "true" ? "false" : "true" })}
+              className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${
+                settings.division_edit_open === "true" ? "bg-emerald-500" : "bg-slate-600"
+              }`}
+            >
+              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${
+                settings.division_edit_open === "true" ? "translate-x-7" : "translate-x-1"
               }`} />
             </button>
           </div>
